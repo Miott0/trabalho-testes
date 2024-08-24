@@ -10,6 +10,7 @@ describe('UserService', () => {
   
     it('should create a user successfully', async () => {
       const userData: IUser = { id: undefined, name: 'John Doe', email: 'john@example.com' };
+      
       const newUser = await userService.createUser(userData);
   
       expect(newUser).toBeDefined();

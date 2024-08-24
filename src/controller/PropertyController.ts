@@ -1,4 +1,4 @@
-import e, { Request, Response } from "express";
+import { Request, Response } from "express";
 import { IPropertyService } from "../interface/IPropertyService";
 import { IProperty } from "../interface/IProperty";
 import { PropertyService } from "../service/PropertyService";

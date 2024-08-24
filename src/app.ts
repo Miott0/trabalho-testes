@@ -1,11 +1,6 @@
 import express from "express";
-import {
-  createUser,
-  getUser,
-  getAllUsers,
-  updateUser,
-  deleteUser,
-} from "./controller/UserController";
+import { UserService } from "./service/UserService";
+import { UserController } from "./controller/UserController";
 import {
   getProperties,
   getProperty,
@@ -14,17 +9,19 @@ import {
   deleteProperty,  
 } from "./controller/PropertyController";
 
+const userServices = new UserService();
+const userController = new UserController(userServices);
 
 const app = express();
 
 app.use(express.json());
 
 // User routes
-app.post("/users", createUser);
-app.get("/users/:id", getUser);
-app.get("/users", getAllUsers);
-app.put("/users/:id", updateUser);
-app.delete("/users/:id", deleteUser);
+app.post("/users", userController.createUser);
+app.get("/users/:id", userController.getUserById);
+app.get("/users", userController.getAllUsers);
+app.put("/users/:id", userController.updateUser);
+app.delete("/users/:id", userController.deleteUser);
 
 // Property routes
 app.get("/properties", getProperties);

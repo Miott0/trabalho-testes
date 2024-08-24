@@ -1,86 +1,90 @@
 import { Request, Response } from "express";
 import { IUserService } from "../interface/IUserService";
-import { UserService } from "../service/UserService";
 import { IUser } from "../interface/IUser";
 
-const userService: IUserService = new UserService();
+export class UserController {
+  private userService: IUserService;
 
-export async function createUser(req: Request, res: Response): Promise<void> {
-  try {
-    const userData: IUser = req.body;
-    const newUser = await userService.createUser(userData);
-    res.status(201).json(newUser);
-  } catch (error) {
-    res.status(500).json({ message: "Error creating user" });
+  // Injeção de dependência via construtor
+  constructor(userService: IUserService) {
+    this.userService = userService;
   }
-}
 
-export async function getUser(req: Request, res: Response): Promise<void> {
-  try {
-    const id = Number(req.params.id);
-    if (isNaN(id)) {
-      res.status(400).json({ message: "Invalid user ID" });
-      return;
+  // Método para criar um usuário
+  async createUser(req: Request, res: Response): Promise<void> {
+    try {
+      const user: IUser = req.body;
+      const newUser = await this.userService.createUser(user);
+      res.status(201).json(newUser);
+    } catch (error) {
+      res.status(500).json({ message: "Error creating user" });
     }
-    const user = await userService.getUserById(id);
-    if (!user) {
-      res.status(404).json({ message: "User not found" });
-      return;
-    }
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ message: "Error retrieving user" });
   }
-}
 
-export async function getAllUsers(req: Request, res: Response): Promise<void> {
-  try {
-    const users = await userService.getAllUser();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ message: "Error retrieving users" });
+  // Método para obter um usuário pelo ID
+  async getUserById(req: Request, res: Response): Promise<void> {
+    try {
+      const id = Number(req.params.id);
+      if (isNaN(id)) {
+        res.status(400).json({ message: "Invalid user ID" });
+      }
+      const user = await this.userService.getUserById(id);
+      if (user) {
+        res.json(user);
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching user" });
+    }
   }
-}
 
-export async function updateUser(req: Request, res: Response): Promise<void> {
-  try {
-    const id = Number(req.params.id);
-    if (isNaN(id)) {
-      res.status(400).json({ message: "Invalid user ID" });
-      return;
+  // Método para obter todos os usuários
+  async getAllUsers(req: Request, res: Response): Promise<void> {
+    try {
+      const users = await this.userService.getAllUser();
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching users" });
     }
-
-    const userData: Partial<IUser> = req.body;
-    const updatedUser = await userService.updateUser(id, userData);
-
-    if (!updatedUser) {
-      res.status(404).json({ message: "User not found" });
-      return;
-    }
-
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    res.status(500).json({ message: "Error updating user" });
   }
-}
 
-export async function deleteUser(req: Request, res: Response): Promise<void> {
-  try {
-    const id = Number(req.params.id);
-    if (isNaN(id)) {
-      res.status(400).json({ message: "Invalid user ID" });
-      return;
+  // Método para atualizar um usuário
+  async updateUser(req: Request, res: Response): Promise<void> {
+    try {
+      const id = Number(req.params.id);
+      if (isNaN(id)) {
+        res.status(400).json({ message: "Invalid user ID" });
+        return;
+      }
+      const userData: Partial<IUser> = req.body;
+      const updatedUser = await this.userService.updateUser(id, userData);
+      if (updatedUser) {
+        res.json(updatedUser);
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Error updating user" });
     }
+  }
 
-    const success = await userService.deleteUser(id);
-
-    if (!success) {
-      res.status(404).json({ message: "User not found" });
-      return;
+  // Método para deletar um usuário
+  async deleteUser(req: Request, res: Response): Promise<void> {
+    try {
+      const id = Number(req.params.id);
+      if (isNaN(id)) {
+        res.status(400).json({ message: "Invalid user ID" });
+        return;
+      }
+      const isDeleted = await this.userService.deleteUser(id);
+      if (isDeleted) {
+        res.json({ message: "User deleted successfully" });
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Error deleting user" });
     }
-
-    res.status(200).json({ message: "User deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Error deleting user" });
   }
 }
