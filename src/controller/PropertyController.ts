@@ -1,70 +1,43 @@
-import { Request, Response } from "express";
-import { IPropertyService } from "../interface/IPropertyService";
-import { IProperty } from "../interface/IProperty";
-import { PropertyService } from "../service/PropertyService";
+import { Request, Response } from 'express';
+import { PropertyService } from '../service/PropertyService';
 
-const propertyService: IPropertyService = new PropertyService();
+export class PropertyController {
+  constructor(private propertyService: PropertyService) {}
 
-export async function getProperties(req: Request, res: Response) {
-  const properties = await propertyService.getProperties();
-  res.json(properties);
-}
-
-export async function getProperty(req: Request, res: Response) {
-  const id = Number(req.params.id);
-  if (isNaN(id)) {
-    res.status(400).json({ message: "Invalid property ID" });
-    return;
-  }
-  const property = await propertyService.getProperty(id);
-  if (property) {
-    res.json(property);
-  } else {
-    res.status(404).json({ message: "Property not found" });
-  }
-}
-
-export async function addProperty(req: Request, res: Response) {
-  const property: IProperty = {
-    area: req.body.area,
-    adrress: req.body.adrress,
-  };
-  const newProperty = await propertyService.addProperty(property);
-
-  res.status(201).json(newProperty);
-}
-
-export async function updateProperty(req: Request, res: Response) {
-  const id = Number(req.params.id);
-  if (isNaN(id)) {
-    res.status(400).json({ message: "Invalid property ID" });
-    return;
+  async getProperties(req: Request, res: Response) {
+    const properties = await this.propertyService.getProperties();
+    res.status(200).json(properties);
   }
 
-  const property: IProperty = {
-    area: req.body.area,
-    adrress: req.body.adrress,
-  };
-  const updatedProperty = await propertyService.updateProperty(id, req.body);
-
-  if (updatedProperty) {
-    res.json(updatedProperty);
-  } else {    
-    res.status(404).json({ message: "Property not found" });
+  async getProperty(req: Request, res: Response) {
+    const property = await this.propertyService.getProperty(parseInt(req.params.id, 10));
+    if (property) {
+      res.status(200).json(property);
+    } else {
+      res.status(404).send();
+    }
   }
-}
- 
-export async function deleteProperty(req: Request, res: Response) {
-  const id = Number(req.params.id);
-  if (isNaN(id)) {
-    res.status(400).json({ message: "Invalid property ID" });
-    return;
-  }
-  const isDeleted = await propertyService.deleteProperty(id);
 
-  if (isDeleted) {
-    res.json({ message: "Property deleted successfully" });
-  } else {
-    res.status(404).json({ message: "Property not found" });
+  async addProperty(req: Request, res: Response) {
+    const newProperty = await this.propertyService.addProperty(req.body);
+    res.status(201).json(newProperty);
+  }
+
+  async updateProperty(req: Request, res: Response) {
+    const updatedProperty = await this.propertyService.updateProperty(parseInt(req.params.id, 10), req.body);
+    if (updatedProperty) {
+      res.status(200).json(updatedProperty);
+    } else {
+      res.status(404).send();
+    }
+  }
+
+  async deleteProperty(req: Request, res: Response) {
+    const success = await this.propertyService.deleteProperty(parseInt(req.params.id, 10));
+    if (success) {
+      res.status(200).json({ message: "Property deleted successfully" });
+    } else {
+      res.status(404).send();
+    }
   }
 }
