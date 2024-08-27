@@ -1,16 +1,14 @@
 import express from "express";
 import { UserService } from "./service/UserService";
 import { UserController } from "./controller/UserController";
-import {
-  getProperties,
-  getProperty,
-  addProperty,
-  updateProperty,
-  deleteProperty,  
-} from "./controller/PropertyController";
+import { PropertyService } from "./service/PropertyService";
+import { PropertyController } from "./controller/PropertyController";
 
 const userServices = new UserService();
 const userController = new UserController(userServices);
+
+const propertyService = new PropertyService();
+const propertyController = new PropertyController(propertyService);
 
 const app = express();
 
@@ -24,10 +22,10 @@ app.put("/users/:id", userController.updateUser);
 app.delete("/users/:id", userController.deleteUser);
 
 // Property routes
-app.get("/properties", getProperties);
-app.get("/properties/:id", getProperty);
-app.post("/properties", addProperty);
-app.put("/properties/:id", updateProperty);
-app.delete("/properties/:id", deleteProperty);
+app.get("/properties", propertyController.getProperties.bind(propertyController));
+app.get("/properties/:id", propertyController.getProperty.bind(propertyController));
+app.post("/properties", propertyController.addProperty.bind(propertyController));
+app.put("/properties/:id", propertyController.updateProperty.bind(propertyController));
+app.delete("/properties/:id", propertyController.deleteProperty.bind(propertyController));
 
 export default app;
