@@ -1,5 +1,5 @@
-import { PropertyService } from '../service/PropertyService';
-import { IProperty } from '../interface/IProperty';
+import { PropertyService } from '../../src/service/PropertyService';
+import { IProperty } from '../../src/interface/IProperty';
 
 describe('PropertyService', () => {
     let propertyService: PropertyService;

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { UserController } from './UserController';
-import { IUserService } from '../interface/IUserService';
-import { IUser } from '../interface/IUser';
+import { UserController } from '../../src/controller/UserController';
+import { IUserService } from '../../src/interface/IUserService';
+import { IUser } from '../../src/interface/IUser';
 
 // Mocks
 const mockUserService: jest.Mocked<IUserService> = {
