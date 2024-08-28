@@ -1,5 +1,6 @@
 import { IAppointment } from "./IAppointment";
 
+
 export interface IAppointmentRepository {
   getAppointments(): Promise<IAppointment[]>;
   getAppointment(id: number): Promise<IAppointment | null>;
