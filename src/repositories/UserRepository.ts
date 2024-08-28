@@ -86,18 +86,22 @@ export class UserRepository implements IUserRepository {
         name: updatedUser.name ?? undefined,
       } as IUser;
     } catch (error: any) {
+      // Converter error.message para string de forma segura
+      const errorMessage = typeof error.message === 'string' ? error.message : JSON.stringify(error.message);
+  
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        // Tratamento de erros específicos do Prisma
-        if (error.code === "P2025") {
-          // P2025: Registro não encontrado
-          throw new Error("Usuário não encontrado.");
-        }
-        // Adicione outros códigos de erro do Prisma que você deseja tratar aqui
+          // Tratamento de erros específicos do Prisma
+          if (error.code === "P2025") {
+              // P2025: Registro não encontrado
+              throw new Error("Usuário não encontrado.");
+          }
+          // Adicione outros códigos de erro do Prisma que você deseja tratar aqui
       }
-
+  
       // Repassa o erro original para ser tratado mais adiante
-      throw new Error(`Erro ao atualizar o usuário: ${error.message}`);
-    }
+      throw new Error(`Erro ao atualizar o usuário: ${errorMessage}`);
+  }
+  
   }
 
   async deleteUser(id: number): Promise<boolean> {
