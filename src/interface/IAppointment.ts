@@ -1,8 +1,8 @@
 export interface IAppointment {
-  id?: number;
-  title?: string;
-  startDate?: Date;
-  endDate?: Date;
-  idUser?: number;
-  idProperty?: number;
+  id: number;
+  title: string | null;
+  startDate: Date;
+  endDate: Date;
+  userId: number;
+  propertyId: number;
 }

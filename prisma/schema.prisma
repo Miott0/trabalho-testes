@@ -1,0 +1,34 @@
+datasource db {
+  provider = "postgresql" // ou "mysql", "sqlite", etc.
+  url      = env("DATABASE_URL")
+}
+
+generator client {  
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int         @id @default(autoincrement())
+  name      String?
+  email     String      @unique
+  appointments Appointment[] // Relacionamento com Appointment
+}
+
+model Property {
+  id          Int         @id @default(autoincrement())
+  area        Float?
+  address     String?
+  appointments Appointment[] // Relacionamento com Appointment
+}
+
+model Appointment {
+  id          Int      @id @default(autoincrement())
+  title       String?
+  startDate   DateTime
+  endDate     DateTime
+  userId      Int
+  propertyId  Int
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
