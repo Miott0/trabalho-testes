@@ -1,6 +1,6 @@
 export interface IAppointment {
   id: number;
-  title: string | null;
+  title: string;
   startDate: Date;
   endDate: Date;
   userId: number;
