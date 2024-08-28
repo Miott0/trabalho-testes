@@ -1,76 +1,120 @@
-import { UserRepository } from './UserRepository'
-import { IUser } from '../interface/IUser';
+import { UserRepository } from '../../src/repositories/UserRepository';
+import { IUser } from '../../src/interface/IUser';
+import { PrismaClient, Prisma } from '@prisma/client';
+
+// Criando uma versão mock do PrismaClient
+const mockPrisma = {
+  user: {
+    create: jest.fn(),
+    findUnique: jest.fn(),
+    findMany: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  },
+};
+
+// Criando uma classe mock para simular `PrismaClientKnownRequestError`
+class MockPrismaClientKnownRequestError extends Error {
+  code: string;
+  constructor(message: string, code: string) {
+    super(message);
+    this.code = code;
+  }
+}
+
+// Fazendo o mock do PrismaClient para usar nossa versão mock
+jest.mock('@prisma/client', () => {
+  return {
+    PrismaClient: jest.fn().mockImplementation(() => mockPrisma),
+    Prisma: {
+      PrismaClientKnownRequestError: MockPrismaClientKnownRequestError,
+    },
+  };
+});
 
 describe('UserRepository', () => {
-  let userRepository: UserRepository;
+  let sut: UserRepository;
 
   beforeEach(() => {
-    userRepository = new UserRepository();
+    sut = new UserRepository();
   });
 
   test('should create a new user', async () => {
     const user: IUser = { name: 'John Doe', email: 'john@example.com' };
-    const newUser = await userRepository.createUser(user);
+    const mockUser = { id: 1, ...user };
+    (mockPrisma.user.create as jest.Mock).mockResolvedValue(mockUser);
 
-    expect(newUser).toHaveProperty('id');
-    expect(newUser.name).toBe('John Doe');
-    expect(newUser.email).toBe('john@example.com');
+    const newUser = await sut.createUser(user);
+
+    expect(newUser).toEqual(mockUser);
+    expect(mockPrisma.user.create).toHaveBeenCalledWith({
+      data: { email: 'john@example.com', name: 'John Doe' },
+    });
   });
 
   test('should return user by id', async () => {
-    const user: IUser = { name: 'John Doe', email: 'john@example.com' };
-    const newUser = await userRepository.createUser(user);
+    const mockUser = { id: 1, name: 'John Doe', email: 'john@example.com' };
+    (mockPrisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
-    const foundUser = await userRepository.getUserById(newUser.id!);
-    expect(foundUser).not.toBeNull();
-    expect(foundUser?.id).toBe(newUser.id);
+    const foundUser = await sut.getUserById(1);
+    expect(foundUser).toEqual(mockUser);
+    expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({ where: { id: 1 } });
   });
 
-  test('should return null if user is not found by id', async () => {
-    const foundUser = await userRepository.getUserById(999);
-    expect(foundUser).toBeNull();
+  test('should throw error if user is not found by id', async () => {
+    (mockPrisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+
+    await expect(sut.getUserById(999)).rejects.toThrow('User with ID 999 not found');
   });
 
   test('should return all users', async () => {
-    const user1: IUser = { name: 'John Doe', email: 'john@example.com' };
-    const user2: IUser = { name: 'Jane Doe', email: 'jane@example.com' };
-    await userRepository.createUser(user1);
-    await userRepository.createUser(user2);
+    const mockUsers = [
+      { id: 1, name: 'John Doe', email: 'john@example.com' },
+      { id: 2, name: 'Jane Doe', email: 'jane@example.com' },
+    ];
+    (mockPrisma.user.findMany as jest.Mock).mockResolvedValue(mockUsers);
 
-    const users = await userRepository.getAllUsers();
-    expect(users).toHaveLength(2);
-    expect(users[0].name).toBe('John Doe');
-    expect(users[1].name).toBe('Jane Doe');
+    const users = await sut.getAllUsers();
+    expect(users).toEqual(mockUsers);
+    expect(mockPrisma.user.findMany).toHaveBeenCalled();
   });
 
   test('should update a user', async () => {
     const user: IUser = { name: 'John Doe', email: 'john@example.com' };
-    const newUser = await userRepository.createUser(user);
+    const updatedUser = { id: 1, name: 'John Updated', email: 'john@example.com' };
+    (mockPrisma.user.update as jest.Mock).mockResolvedValue(updatedUser);
 
-    const updatedUser = await userRepository.updateUser(newUser.id!, { name: 'John Updated' });
+    const result = await sut.updateUser(1, { name: 'John Updated' });
 
-    expect(updatedUser).not.toBeNull();
-    expect(updatedUser?.name).toBe('John Updated');
+    expect(result).toEqual(updatedUser);
+    expect(mockPrisma.user.update).toHaveBeenCalledWith({
+      where: { id: 1 },
+      data: { name: 'John Updated' },
+    });
   });
 
-  test('should return null when trying to update a non-existent user', async () => {
-    const updatedUser = await userRepository.updateUser(999, { name: 'Non-existent User' });
-    expect(updatedUser).toBeNull();
+  test('should throw error when trying to update a non-existent user', async () => {
+    (mockPrisma.user.update as jest.Mock).mockRejectedValue(
+      new MockPrismaClientKnownRequestError('Usuário não encontrado.', 'P2025')
+    );
+
+    await expect(sut.updateUser(999, { name: 'Non-existent User' })).rejects.toThrow('Usuário não encontrado.');
   });
 
   test('should delete a user', async () => {
-    const user: IUser = { name: 'John Doe', email: 'john@example.com' };
-    const newUser = await userRepository.createUser(user);
+    (mockPrisma.user.delete as jest.Mock).mockResolvedValue({ id: 1, name: 'John Doe', email: 'john@example.com' });
 
-    const isDeleted = await userRepository.deleteUser(newUser.id!);
+    const isDeleted = await sut.deleteUser(1);
     expect(isDeleted).toBe(true);
-
-    const foundUser = await userRepository.getUserById(newUser.id!);
-    expect(foundUser).toBeNull();
+    expect(mockPrisma.user.delete).toHaveBeenCalledWith({ where: { id: 1 } });
   });
 
   test('should return false when trying to delete a non-existent user', async () => {
-    const isDeleted = await userRepository.deleteUser(999);
+    (mockPrisma.user.delete as jest.Mock).mockRejectedValue(
+      new MockPrismaClientKnownRequestError('Registro não encontrado.', 'P2025')
+    );
+
+    const isDeleted = await sut.deleteUser(999);
     expect(isDeleted).toBe(false);
   });
 });
