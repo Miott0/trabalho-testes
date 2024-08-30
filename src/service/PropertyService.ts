@@ -15,19 +15,22 @@ export class PropertyService implements IPropertyService {
   }
 
   async getProperty(id: number): Promise<IProperty | null> {
-    return await this.propertyRepository.getProperty(id);
+    const property = await this.propertyRepository.getProperty(id);
+    return property;
   }
 
   async addProperty(property: IProperty): Promise<IProperty> {
     return await this.propertyRepository.addProperty(property);
   }
 
-  async updateProperty( id:number,propertyData: Partial<IProperty>): Promise<IProperty | null> {
-    return await this.propertyRepository.updateProperty( id, propertyData);
+  async updateProperty(id: number, propertyData: Partial<IProperty>): Promise<IProperty | null> {
+    const updatedProperty = await this.propertyRepository.updateProperty(id, propertyData);
+    return updatedProperty; 
   }
 
   async deleteProperty(id: number): Promise<boolean> {
-    return await this.propertyRepository.deleteProperty(id);
+    const deleted = await this.propertyRepository.deleteProperty(id);
+    return deleted;
   }
 }
                   

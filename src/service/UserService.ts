@@ -1,16 +1,19 @@
 import { IUserService } from '../interface/IUserService';
 import { IUser } from '../interface/IUser';
 import { IUserRepository } from '../interface/IUserRepository';
-import { UserRepository } from '../repositories/UserRepository';
 
 export class UserService implements IUserService {
   private userRepository: IUserRepository;
 
-  constructor() {
-    this.userRepository = new UserRepository();
+  constructor(userRepository: IUserRepository) {
+    this.userRepository = userRepository;
   }
 
   async createUser(user: IUser): Promise<IUser> {
+    const userExists = await this.userRepository.getUserByEmail(user.email);
+    if (userExists) {
+      throw new Error(`User with ID ${user.id} already exists`);
+    }
     return await this.userRepository.createUser(user);
   }
 

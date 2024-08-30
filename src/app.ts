@@ -1,33 +1,35 @@
 import express from "express";
 import { UserService } from "./service/UserService";
 import { UserController } from "./controller/UserController";
-import {
-  getProperties,
-  getProperty,
-  addProperty,
-  updateProperty,
-  deleteProperty,  
-} from "./controller/PropertyController";
+import { PropertyService } from "./service/PropertyService";
+import { PropertyController } from "./controller/PropertyController";
+import { IUserRepository } from "./interface/IUserRepository";
+import { UserRepository } from "./repositories/UserRepository";
 
-const userServices = new UserService();
-const userController = new UserController(userServices);
+// Create instances of repositories and services
+const userRepository: IUserRepository = new UserRepository();
+const userService = new UserService(userRepository);
+const userController = new UserController(userService);
 
+const propertyService = new PropertyService();
+const propertyController = new PropertyController(propertyService);
+
+// Create the Express app
 const app = express();
-
 app.use(express.json());
 
 // User routes
-app.post("/users", userController.createUser);
-app.get("/users/:id", userController.getUserById);
-app.get("/users", userController.getAllUsers);
-app.put("/users/:id", userController.updateUser);
-app.delete("/users/:id", userController.deleteUser);
+app.post("/users", (req, res) => userController.createUser(req, res));
+app.get("/users/:id", (req, res) => userController.getUserById(req, res));
+app.get("/users", (req, res) => userController.getAllUsers(req, res));
+app.put("/users/:id", (req, res) => userController.updateUser(req, res));
+app.delete("/users/:id", (req, res) => userController.deleteUser(req, res));
 
 // Property routes
-app.get("/properties", getProperties);
-app.get("/properties/:id", getProperty);
-app.post("/properties", addProperty);
-app.put("/properties/:id", updateProperty);
-app.delete("/properties/:id", deleteProperty);
+app.get("/properties", (req, res) => propertyController.getProperties(req, res));
+app.get("/properties/:id", (req, res) => propertyController.getProperty(req, res));
+app.post("/properties", (req, res) => propertyController.addProperty(req, res));
+app.put("/properties/:id", (req, res) => propertyController.updateProperty(req, res));
+app.delete("/properties/:id", (req, res) => propertyController.deleteProperty(req, res));
 
 export default app;

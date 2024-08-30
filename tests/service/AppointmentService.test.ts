@@ -1,5 +1,5 @@
-import { AppointmentService } from "./AppointmentService";
-import { IAppointment } from "../interface/IAppointment";
+import { AppointmentService } from "../../src/service/AppointmentService";
+import { IAppointment } from "../../src/interface/IAppointment";
 
 describe("AppointmentService", () => {
   let appointmentService: AppointmentService;

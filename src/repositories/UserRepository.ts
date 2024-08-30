@@ -1,45 +1,74 @@
-import { IUserRepository } from '../interface/IUserRepository';
-import { IUser } from '../interface/IUser';
-
+import prisma from "../client"; 
+import { IUserRepository } from "../interface/IUserRepository";
+import { IUser } from "../interface/IUser";
 export class UserRepository implements IUserRepository {
-  private users: IUser[] = [];
-
+  
+  
   async createUser(user: IUser): Promise<IUser> {
-    const newUser = { ...user, id: this.users.length + 1 };
-    this.users.push(newUser);
-    return newUser;
+    try {
+      const newUser = await prisma.user.create({
+        data: {
+          email: user.email,
+          name: user.name,
+        },
+      });
+      return newUser;
+    } catch (err: any) {
+      throw new Error(`Error creating user: ${err.message}`);
+    }
   }
 
   async getUserById(id: number): Promise<IUser | null> {
-    const user = this.users.find((user) => user.id === id);
-    return user || null;
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id },
+      });
+      return user;
+    } catch (err: any) {
+      throw new Error(`Error getting user with ID ${id}: ${err.message}`);
+    }
+  }
+
+  async getUserByEmail(email: string): Promise<IUser | null> {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email },
+      });
+      return user;
+    } catch (err: any) {
+      throw new Error(`Error getting user with email ${email}: ${err.message}`);
+    }
   }
 
   async getAllUsers(): Promise<IUser[]> {
-    return this.users;
+    try {
+      const users = await prisma.user.findMany();
+      return users;
+    } catch (err: any) {
+      throw new Error(`Error getting users: ${err.message}`);
+    }
   }
 
   async updateUser(id: number, userData: Partial<IUser>): Promise<IUser | null> {
-    const userIndex = this.users.findIndex((u) => u.id === id);
-
-    if (userIndex === -1) {
-      return null;
+    try {
+      const updatedUser = await prisma.user.update({
+        where: { id },
+        data: userData,
+      });
+      return updatedUser;
+    } catch (err: any) {
+      throw new Error(`Error updating user with ID ${id}: ${err.message}`);
     }
-
-    const updatedUser = { ...this.users[userIndex], ...userData };
-    this.users[userIndex] = updatedUser;
-
-    return updatedUser;
   }
 
   async deleteUser(id: number): Promise<boolean> {
-    const userIndex = this.users.findIndex((user) => user.id === id);
-
-    if (userIndex === -1) {
-      return false;
+    try {
+      await prisma.user.delete({
+        where: { id },
+      });
+      return true;
+    } catch (err: any) {
+      throw new Error(`Error deleting user with ID ${id}: ${err.message}`);
     }
-
-    this.users.splice(userIndex, 1);
-    return true;
   }
 }

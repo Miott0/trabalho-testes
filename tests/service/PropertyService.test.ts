@@ -1,5 +1,5 @@
-import { PropertyService } from '../service/PropertyService';
-import { IProperty } from '../interface/IProperty';
+import { PropertyService } from '../../src/service/PropertyService';
+import { IProperty } from '../../src/interface/IProperty';
 
 describe('PropertyService', () => {
     let propertyService: PropertyService;
@@ -11,8 +11,8 @@ describe('PropertyService', () => {
 
     it('should get all properties', async () => {
         const properties: IProperty[] = [
-            { id: 1, area: 100, adrress: '123 Street' },
-            { id: 2, area: 200, adrress: '456 Avenue' },
+            { id: 1, area: 100, address: '123 Street' },
+            { id: 2, area: 200, address: '456 Avenue' },
         ];
 
         await propertyService.addProperty(properties[0]);

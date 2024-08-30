@@ -5,28 +5,39 @@ import { IUser } from "../interface/IUser";
 export class UserController {
   private userService: IUserService;
 
-  // Injeção de dependência via construtor
   constructor(userService: IUserService) {
     this.userService = userService;
   }
 
-  // Método para criar um usuário
   async createUser(req: Request, res: Response): Promise<void> {
     try {
+      const { email, name } = req.body;
+      if (!email || !name) {
+        res.status(400).json({ message: "Email and name are required" });
+        return;
+      }
+      if (!this.isValidEmail(email)) {
+        res.status(400).json({ message: "Invalid email format" });
+        return;
+      }
+      if (name.trim() === "") {
+        res.status(400).json({ message: "Name cannot be empty" });
+        return;
+      }
       const user: IUser = req.body;
       const newUser = await this.userService.createUser(user);
       res.status(201).json(newUser);
-    } catch (error) {
-      res.status(500).json({ message: "Error creating user" });
+    } catch (error: any) {
+      res.status(500).json({ message: `Error creating user: ${error.message}` });
     }
   }
 
-  // Método para obter um usuário pelo ID
   async getUserById(req: Request, res: Response): Promise<void> {
     try {
       const id = Number(req.params.id);
       if (isNaN(id)) {
         res.status(400).json({ message: "Invalid user ID" });
+        return;
       }
       const user = await this.userService.getUserById(id);
       if (user) {
@@ -34,22 +45,20 @@ export class UserController {
       } else {
         res.status(404).json({ message: "User not found" });
       }
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching user" });
+    } catch (error: any) {
+      res.status(500).json({ message: `Error fetching user: ${error.message}` });
     }
   }
 
-  // Método para obter todos os usuários
   async getAllUsers(req: Request, res: Response): Promise<void> {
     try {
       const users = await this.userService.getAllUser();
       res.json(users);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching users" });
+    } catch (error: any) {
+      res.status(500).json({ message: `Error fetching users: ${error.message}` });
     }
   }
 
-  // Método para atualizar um usuário
   async updateUser(req: Request, res: Response): Promise<void> {
     try {
       const id = Number(req.params.id);
@@ -64,12 +73,11 @@ export class UserController {
       } else {
         res.status(404).json({ message: "User not found" });
       }
-    } catch (error) {
-      res.status(500).json({ message: "Error updating user" });
+    } catch (error: any) {
+      res.status(500).json({ message: `Error updating user: ${error.message}` });
     }
   }
 
-  // Método para deletar um usuário
   async deleteUser(req: Request, res: Response): Promise<void> {
     try {
       const id = Number(req.params.id);
@@ -83,8 +91,13 @@ export class UserController {
       } else {
         res.status(404).json({ message: "User not found" });
       }
-    } catch (error) {
-      res.status(500).json({ message: "Error deleting user" });
+    } catch (error: any) {
+      res.status(500).json({ message: `Error deleting user: ${error.message}` });
     }
+  }
+
+  private isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   }
 }
