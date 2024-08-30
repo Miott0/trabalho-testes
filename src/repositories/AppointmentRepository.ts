@@ -15,6 +15,9 @@ export class AppointmentRepository implements IAppointmentRepository {
   }
   
   async addAppointment(appointment: IAppointment): Promise<IAppointment> {
+    if (!appointment.title || appointment.idUser === undefined || appointment.idProperty === undefined) {
+      throw new Error('Title, idUser, and idProperty are required');
+    }
     const newAppointment = { ...appointment, id: this.appointments.length + 1 };
     this.appointments.push(newAppointment);
     return newAppointment;
