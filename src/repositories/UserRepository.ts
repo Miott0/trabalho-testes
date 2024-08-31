@@ -2,9 +2,7 @@ import prisma from "../client";
 import { IUserRepository } from "../interface/IUserRepository";
 import { IUser } from "../interface/IUser";
 export class UserRepository implements IUserRepository {
-  
-  
-  async createUser(user: IUser): Promise<IUser> {
+  async addUser(user: IUser): Promise<IUser> {
     try {
       const newUser = await prisma.user.create({
         data: {

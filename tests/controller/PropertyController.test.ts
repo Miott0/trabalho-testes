@@ -1,125 +1,243 @@
-import request from 'supertest';
-import express, { Express } from 'express';
-import bodyParser from 'body-parser';
+import { Request, Response } from 'express';
 import { PropertyController } from '../../src/controller/PropertyController';
-import { PropertyService } from '../../src/service/PropertyService';
-import { jest } from '@jest/globals';
+import { IPropertyService } from '../../src/interface/IPropertyService';
+import { IProperty } from '../../src/interface/IProperty';
+
+// Mocks
+const mockPropertyService: jest.Mocked<IPropertyService> = {
+  createProperty: jest.fn(),
+  getProperty: jest.fn(),
+  getProperties: jest.fn(),
+  updateProperty: jest.fn(),
+  deleteProperty: jest.fn(),
+};
+
+const mockRequest = {} as Request;
+const mockResponse = {
+  status: jest.fn().mockReturnThis(),
+  json: jest.fn(),
+} as unknown as Response;
 
 describe('PropertyController', () => {
-  let mockService: jest.Mocked<PropertyService>;
-  let app: Express;
+  let propertyController: PropertyController;
 
   beforeEach(() => {
-    // Configuração da aplicação Express
-    app = express();
-    app.use(bodyParser.json());
-
-    // Criação de um mock de PropertyService
-    mockService = {
-      getProperties: jest.fn(),
-      getProperty: jest.fn(),
-      addProperty: jest.fn(),
-      updateProperty: jest.fn(),
-      deleteProperty: jest.fn(),
-    } as unknown as jest.Mocked<PropertyService>;
-
-    // Configuração do controlador com o mock injetado
-    const controller = new PropertyController(mockService);
-
-    // Configuração das rotas
-    app.get('/properties', controller.getProperties.bind(controller));
-    app.get('/properties/:id', controller.getProperty.bind(controller));
-    app.post('/properties', controller.addProperty.bind(controller));
-    app.put('/properties/:id', controller.updateProperty.bind(controller));
-    app.delete('/properties/:id', controller.deleteProperty.bind(controller));
+    propertyController = new PropertyController(mockPropertyService);
+    jest.clearAllMocks();
   });
 
-  afterEach(() => {
-    jest.clearAllMocks(); // Limpa os mocks após cada teste
-  });
+  describe('createProperty', () => {
+    test('should create a new property and return status 201', async () => {
+      const property: IProperty = { id: 1, area: 100, address: '123 Main St' };
+      mockPropertyService.createProperty.mockResolvedValue(property);
 
-  it('should fetch a property by ID', async () => {
-    const propertyId = 1;
+      mockRequest.body = property;
 
-    // Configura o mock para retornar o objeto esperado
-    mockService.getProperty.mockResolvedValue({ id: propertyId, area: 120, address: "123 Main St" });
+      await propertyController.createProperty(mockRequest, mockResponse);
 
-    // Verifica se o mock está configurado corretamente
-    console.log('Before Request Mock Calls:', mockService.getProperty.mock.calls);
-
-    // Faz a requisição ao endpoint
-    const response = await request(app).get(`/properties/${propertyId}`);
-
-    // Verifica se o mock foi chamado corretamente
-    console.log('After Request Mock Calls:', mockService.getProperty.mock.calls);
-
-    // Verifica o status e o corpo da resposta
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ id: propertyId, area: 120, address: "123 Main St" });
-  });
-
-    // Teste para buscar todas as propriedades
-    it('should fetch all properties', async () => {
-      mockService.getProperties.mockResolvedValue([{ id: 1, area: 120, address: "123 Main St" }]);
-      const response = await request(app).get('/properties');
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual([{ id: 1, area: 120, address: "123 Main St" }]);
+      expect(mockPropertyService.createProperty).toHaveBeenCalledWith(property);
+      expect(mockResponse.status).toHaveBeenCalledWith(201);
+      expect(mockResponse.json).toHaveBeenCalledWith(property);
     });
-  
 
-  // Teste para adicionar uma propriedade
-  it('should add a new property', async () => {
-    const newProperty = { area: 150, address: "456 Elm St" };
-    mockService.addProperty.mockResolvedValue({ id: 2, ...newProperty });
-    const response = await request(app).post('/properties').send(newProperty);
-    expect(response.status).toBe(201);
-    expect(response.body).toEqual({ id: 2, area: 150, address: "456 Elm St" });
+    test('should return 400 if area is missing', async () => {
+      mockRequest.body = { address: '123 Main St' };
+
+      await propertyController.createProperty(mockRequest, mockResponse);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message:'Area and address are required' });
+    });
+
+    test('should return 400 if address is missing', async () => {
+      mockRequest.body = { area: 100 };
+
+      await propertyController.createProperty(mockRequest, mockResponse);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Area and address are required' });
+    });
+
+    test('should return 500 when createProperty fails', async () => {
+      mockPropertyService.createProperty.mockRejectedValue(new Error('Creation failed'));
+
+      mockRequest.body = { area: 100, address: '123 Main St' };
+
+      await propertyController.createProperty(mockRequest, mockResponse);
+
+      expect(mockPropertyService.createProperty).toHaveBeenCalledWith({ area: 100, address: '123 Main St' });
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Error creating property: Creation failed' });
+    });
   });
 
-  // Teste para atualizar uma propriedade
-  it('should update a property', async () => {
-    const propertyId = 1;
-    const updatedData = { area: 200, address: "789 Pine St" };
-    mockService.updateProperty.mockResolvedValue({ id: propertyId, ...updatedData });
-    const response = await request(app).put(`/properties/${propertyId}`).send(updatedData);
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ id: propertyId, area: 200, address: "789 Pine St" });
+  describe('getPropertyById', () => {
+    test('should return a property by ID', async () => {
+      const property: IProperty = { id: 1, area: 100, address: '123 Main St' };
+      mockPropertyService.getProperty.mockResolvedValue(property);
+
+      mockRequest.params = { id: '1' };
+
+      await propertyController.getProperty(mockRequest, mockResponse);
+
+      expect(mockPropertyService.getProperty).toHaveBeenCalledWith(1);
+      expect(mockResponse.json).toHaveBeenCalledWith(property);
+    });
+
+    test('should return 400 when ID is invalid', async () => {
+      mockRequest.params = { id: 'abc' };
+
+      await propertyController.getProperty(mockRequest, mockResponse);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Invalid property ID' });
+    });
+
+    test('should return 404 when property not found', async () => {
+      mockPropertyService.getProperty.mockResolvedValue(null);
+
+      mockRequest.params = { id: '1' };
+
+      await propertyController.getProperty(mockRequest, mockResponse);
+
+      expect(mockPropertyService.getProperty).toHaveBeenCalledWith(1);
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Property not found' });
+    });
+
+    test('should return 500 when getProperty fails', async () => {
+      mockPropertyService.getProperty.mockRejectedValue(new Error('Retrieval failed'));
+
+      mockRequest.params = { id: '1' };
+
+      await propertyController.getProperty(mockRequest, mockResponse);
+
+      expect(mockPropertyService.getProperty).toHaveBeenCalledWith(1);
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Error fetching property: Retrieval failed' });
+    });
   });
 
-  // Teste para deletar uma propriedade
-  it('should delete a property', async () => {
-    const propertyId = 1;
-    mockService.deleteProperty.mockResolvedValue(true);
-    const response = await request(app).delete(`/properties/${propertyId}`);
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ message: "Property deleted successfully" });
+  describe('getAllProperties', () => {
+    test('should retrieve all properties', async () => {
+      const properties: IProperty[] = [
+        { id: 1, area: 100, address: '123 Main St' },
+        { id: 2, area: 200, address: '456 Elm St' },
+      ];
+      mockPropertyService.getProperties.mockResolvedValue(properties);
+
+      await propertyController.getProperties(mockRequest, mockResponse);
+
+      expect(mockPropertyService.getProperties).toHaveBeenCalled();
+      expect(mockResponse.json).toHaveBeenCalledWith(properties);
+    });
+
+    test('should return 500 when getProperties fails', async () => {
+      mockPropertyService.getProperties.mockRejectedValue(new Error('Retrieval failed'));
+
+      await propertyController.getProperties(mockRequest, mockResponse);
+
+      expect(mockPropertyService.getProperties).toHaveBeenCalled();
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Error fetching properties: Retrieval failed' });
+    });
   });
 
-  // Teste para quando a propriedade não for encontrada
-  it('should return 404 when property is not found', async () => {
-    mockService.getProperty.mockResolvedValue(null); // Simula a propriedade não encontrada
-    const propertyId = 999; // Um ID que não existe
-    const response = await request(app).get(`/properties/${propertyId}`);
-    expect(response.status).toBe(404);
-    expect(response.body).toEqual({});
+  describe('updateProperty', () => {
+    test('should update a property and return updated property', async () => {
+      const updatedProperty: IProperty = { id: 1, area: 150, address: '789 Oak St' };
+      mockPropertyService.updateProperty.mockResolvedValue(updatedProperty);
+
+      mockRequest.params = { id: '1' };
+      mockRequest.body = { area: 150, address: '789 Oak St' };
+
+      await propertyController.updateProperty(mockRequest, mockResponse);
+
+      expect(mockPropertyService.updateProperty).toHaveBeenCalledWith(1, { area: 150, address: '789 Oak St' });
+      expect(mockResponse.json).toHaveBeenCalledWith(updatedProperty);
+    });
+
+    test('should return 400 when ID is invalid', async () => {
+      mockRequest.params = { id: 'abc' };
+      mockRequest.body = { area: 150, address: '789 Oak St' };
+
+      await propertyController.updateProperty(mockRequest, mockResponse);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Invalid property ID' });
+    });
+
+    test('should return 404 when trying to update a non-existent property', async () => {
+      mockPropertyService.updateProperty.mockResolvedValue(null);
+
+      mockRequest.params = { id: '1' };
+      mockRequest.body = { area: 150, address: '789 Oak St' };
+
+      await propertyController.updateProperty(mockRequest, mockResponse);
+
+      expect(mockPropertyService.updateProperty).toHaveBeenCalledWith(1, { area: 150, address: '789 Oak St' });
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Property not found' });
+    });
+
+    test('should return 500 when updateProperty fails', async () => {
+      mockPropertyService.updateProperty.mockRejectedValue(new Error('Update failed'));
+
+      mockRequest.params = { id: '1' };
+      mockRequest.body = { area: 150, address: '789 Oak St' };
+
+      await propertyController.updateProperty(mockRequest, mockResponse);
+
+      expect(mockPropertyService.updateProperty).toHaveBeenCalledWith(1, { area: 150, address: '789 Oak St' });
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Error updating property: Update failed' });
+    });
   });
 
-  // Teste para quando a atualização da propriedade falhar
-  it('should return 404 when trying to update a non-existent property', async () => {
-    mockService.updateProperty.mockResolvedValue(null); // Simula falha na atualização
-    const propertyId = 999; // Um ID que não existe
-    const updatedData = { area: 200, address: "789 Pine St" };
-    const response = await request(app).put(`/properties/${propertyId}`).send(updatedData);
-    expect(response.status).toBe(404);
-    expect(response.body).toEqual({});
-  });
+  describe('deleteProperty', () => {
+    test('should delete a property and return success message', async () => {
+      mockPropertyService.deleteProperty.mockResolvedValue(true);
 
-  // Teste para quando a exclusão da propriedade falhar
-  it('should return 404 when trying to delete a non-existent property', async () => {
-    mockService.deleteProperty.mockResolvedValue(false); // Simula falha na exclusão
-    const propertyId = 999; // Um ID que não existe
-    const response = await request(app).delete(`/properties/${propertyId}`);
-    expect(response.status).toBe(404);
-    expect(response.body).toEqual({});
+      mockRequest.params = { id: '1' };
+
+      await propertyController.deleteProperty(mockRequest, mockResponse);
+
+      expect(mockPropertyService.deleteProperty).toHaveBeenCalledWith(1);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Property deleted successfully' });
+    });
+
+    test('should return 400 when ID is invalid', async () => {
+      mockRequest.params = { id: 'abc' };
+
+      await propertyController.deleteProperty(mockRequest, mockResponse);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Invalid property ID' });
+    });
+
+    test('should return 404 when trying to delete a non-existent property', async () => {
+      mockPropertyService.deleteProperty.mockResolvedValue(false);
+
+      mockRequest.params = { id: '1' };
+
+      await propertyController.deleteProperty(mockRequest, mockResponse);
+
+      expect(mockPropertyService.deleteProperty).toHaveBeenCalledWith(1);
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Property not found' });
+    });
+
+    test('should return 500 when deleteProperty fails', async () => {
+      mockPropertyService.deleteProperty.mockRejectedValue(new Error('Deletion failed'));
+
+      mockRequest.params = { id: '1' };
+
+      await propertyController.deleteProperty(mockRequest, mockResponse);
+
+      expect(mockPropertyService.deleteProperty).toHaveBeenCalledWith(1);
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Error deleting property: Deletion failed' });
+    });
   });
 });
+

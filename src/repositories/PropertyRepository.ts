@@ -1,24 +1,62 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import prisma from "../client";  // Importando prisma do arquivo compartilhado
 import { IPropertyRepository } from "../interface/IPropertyRepository";
 import { IProperty } from "../interface/IProperty";
 
-const prisma = new PrismaClient();
-
 export class PropertyRepository implements IPropertyRepository {
-  getProperties(): Promise<IProperty[]> {
-    throw new Error("Method not implemented.");
+  async addProperty(property: IProperty): Promise<IProperty> {
+    try {
+      const newProperty = await prisma.property.create({
+        data: {
+          area: property.area,
+          address: property.address,
+        },
+      });
+      return newProperty;
+    } catch (err: any) {
+      throw new Error(`Error creating property: ${err.message}`);
+    }
   }
-  getProperty(id: number): Promise<IProperty | null> {
-    throw new Error("Method not implemented.");
+
+  async getPropertyById(id: number): Promise<IProperty | null> {
+    try {
+      const property = await prisma.property.findUnique({
+        where: { id },
+      });
+      return property;
+    } catch (err: any) {
+      throw new Error(`Error getting property with ID ${id}:${err.message}`);
+    }
   }
-  addProperty(property: IProperty): Promise<IProperty> {
-    throw new Error("Method not implemented.");
+
+  async getProperties(): Promise<IProperty[]> {
+    try {
+      const properties = await prisma.property.findMany();
+      return properties;
+    } catch (err: any) {
+      throw new Error(`Error getting properties: ${err.message}`);
+    }
   }
-  updateProperty(id: number, property: Partial<IProperty>): Promise<IProperty | null> {
-    throw new Error("Method not implemented.");
+
+  async updateProperty(id: number, propertyData: Partial<IProperty>): Promise<IProperty | null> {
+    try {
+      const updatedProperty = await prisma.property.update({
+        where: { id },
+        data: propertyData,
+      });
+      return updatedProperty;
+    } catch (err: any) {
+      throw new Error(`Error updating property with ID ${id}:${err.message}`);
+    }
   }
-  deleteProperty(id: number): Promise<boolean> {
-    throw new Error("Method not implemented.");
+
+  async deleteProperty(id: number): Promise<boolean> {
+    try {
+      await prisma.property.delete({
+        where: { id },
+      });
+      return true;
+    } catch (err: any) {
+      throw new Error(`Error deleting property with ID ${id}: ${err.message}`);
+    }
   }
-  
 }

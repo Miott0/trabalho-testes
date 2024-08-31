@@ -1,13 +1,13 @@
 import { IPropertyService } from '../interface/IPropertyService';
 import { IProperty } from '../interface/IProperty';
 import { IPropertyRepository } from '../interface/IPropertyRepository';
-import { PropertyRepository } from '../repositories/PropertyRepository';
+
 
 export class PropertyService implements IPropertyService {
   private propertyRepository: IPropertyRepository;
 
-  constructor() {
-    this.propertyRepository = new PropertyRepository();
+  constructor(propertyRepository: IPropertyRepository) {
+    this.propertyRepository = propertyRepository
   }
 
   async getProperties(): Promise<IProperty[]> {
@@ -15,11 +15,11 @@ export class PropertyService implements IPropertyService {
   }
 
   async getProperty(id: number): Promise<IProperty | null> {
-    const property = await this.propertyRepository.getProperty(id);
+    const property = await this.propertyRepository.getPropertyById(id);
     return property;
   }
 
-  async addProperty(property: IProperty): Promise<IProperty> {
+  async createProperty(property: IProperty): Promise<IProperty> {
     return await this.propertyRepository.addProperty(property);
   }
 

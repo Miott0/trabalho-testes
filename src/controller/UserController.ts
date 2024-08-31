@@ -3,6 +3,11 @@ import { IUserService } from "../interface/IUserService";
 import { IUser } from "../interface/IUser";
 
 export class UserController {
+  private isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+  
   private userService: IUserService;
 
   constructor(userService: IUserService) {
@@ -94,10 +99,5 @@ export class UserController {
     } catch (error: any) {
       res.status(500).json({ message: `Error deleting user: ${error.message}` });
     }
-  }
-
-  private isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
   }
 }

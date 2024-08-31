@@ -13,7 +13,7 @@ describe('UserRepository', () => {
     const userData: IUser = { id: 1, name: 'John Doe', email: 'teste@email.com' };
     prismaMock.user.create.mockResolvedValue(userData as any);
 
-    const newUser = await userRepository.createUser(userData);
+    const newUser = await userRepository.addUser(userData);
 
     expect(newUser).toEqual(userData);
     expect(prismaMock.user.create).toHaveBeenCalledWith({
@@ -28,7 +28,7 @@ describe('UserRepository', () => {
     const errorMessage = 'Error creating user';
     prismaMock.user.create.mockRejectedValue(new Error(errorMessage));
 
-    await expect(userRepository.createUser({ id: 1, name: 'John Doe', email: 'teste@email.com' }))
+    await expect(userRepository.addUser({ id: 1, name: 'John Doe', email: 'teste@email.com' }))
       .rejects
       .toThrow(`Error creating user: ${errorMessage}`);
   });

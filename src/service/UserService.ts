@@ -14,7 +14,7 @@ export class UserService implements IUserService {
     if (userExists) {
       throw new Error(`User with ID ${user.id} already exists`);
     }
-    return await this.userRepository.createUser(user);
+    return await this.userRepository.addUser(user);
   }
 
   async getUserById(id: number): Promise<IUser | null> {

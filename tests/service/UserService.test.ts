@@ -9,7 +9,7 @@ describe('UserService', () => {
     beforeEach(() => {
         // Mock do repositório
         userRepositoryMock = {
-            createUser: jest.fn(),
+            addUser: jest.fn(),
             getUserById: jest.fn(),
             getUserByEmail: jest.fn(),
             getAllUsers: jest.fn(),
@@ -23,7 +23,7 @@ describe('UserService', () => {
 
     it('should create a user successfully', async () => {
         const userData: IUser = { id: 1, name: 'John Doe', email: 'john@example.com' };
-        userRepositoryMock.createUser.mockResolvedValue(userData);
+        userRepositoryMock.addUser.mockResolvedValue(userData);
 
         const newUser = await userService.createUser(userData);
 
@@ -31,7 +31,7 @@ describe('UserService', () => {
         expect(newUser.id).toBe(1);
         expect(newUser.name).toBe('John Doe');
         expect(newUser.email).toBe('john@example.com');
-        expect(userRepositoryMock.createUser).toHaveBeenCalledWith(userData);
+        expect(userRepositoryMock.addUser).toHaveBeenCalledWith(userData);
     });
 
     it('should throw an error if the user already exists', async () => {
