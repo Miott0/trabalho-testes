@@ -4,11 +4,8 @@ import { IAppointmentRepository } from "../interface/IAppointmentRepository";
 import { AppointmentRepository } from "../repositories/AppointmentRepository";
 
 export class AppointmentService implements IAppointmentService {
-  private appointmentRepository: IAppointmentRepository;
-
-  constructor() {
-    this.appointmentRepository = new AppointmentRepository();
-  }
+  
+  constructor(private readonly appointmentRepository: IAppointmentRepository) {}
 
   async getAll(): Promise<IAppointment[]> {
     return await this.appointmentRepository.getAppointments();
