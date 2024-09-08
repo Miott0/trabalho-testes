@@ -40,11 +40,35 @@ export class AppointmentRepository implements IAppointmentRepository {
   }
 
   async updateAppointment(id: number, appointment: Partial<IAppointment>): Promise<IAppointment | null> {
-    throw new Error("Method not implemented.");
+    try {
+      const updatedAppointment = await prisma.appointment.update({
+        where: { id },
+        data: {
+          ...appointment, // Isso vai pegar apenas os campos que vieram preenchidos
+        },
+      });
+      return updatedAppointment;
+    } catch (err: any) {
+      if (err.code === 'P2025') { // Código de erro do Prisma para "record not found"
+        return null;
+      }
+      throw new Error(`Error updating appointment with ID ${id}`);
+    }
   }
 
   async deleteAppointment(id: number): Promise<boolean> {
-    throw new Error("Method not implemented.");
+    try {
+      await prisma.appointment.delete({
+        where: { id },
+      });
+      return true;
+    } catch (err: any) {
+      if (err.code === 'P2025') { // Prisma error code for record not found
+        return false; // Retorna false se o agendamento não foi encontrado
+      }
+      throw new Error(`Error deleting appointment with ID ${id}`);
+    }
   }
+  
 }
 

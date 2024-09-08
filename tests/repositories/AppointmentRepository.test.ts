@@ -136,6 +136,70 @@ describe("AppointmentRepository", () => {
       .rejects
       .toThrow(`${errorMessage}`)
   })
-    
+
+  //update
+
+  it("espera atualizar um appointment com sucesso", async () => {
+    const updatedAppointment = {
+      ...appointment,
+      title: "Updated Title",
+    };
   
+    prismaMock.appointment.update.mockResolvedValue(updatedAppointment as any);
+  
+    const result = await appointmentRepository.updateAppointment(appointment.id, { title: "Updated Title" });
+  
+    expect(result).toEqual(updatedAppointment);
+    expect(prismaMock.appointment.update).toHaveBeenCalledWith({
+      where: { id: appointment.id },
+      data: { title: "Updated Title" },
+    });
+  });
+  
+  it("espera retornar null quando o appointment não existe para ser atualizado", async () => {
+    prismaMock.appointment.update.mockRejectedValue({ code: 'P2025' });
+  
+    const result = await appointmentRepository.updateAppointment(999, { title: "Non-existent" });
+  
+    expect(result).toBeNull();
+  });
+  
+  it("espera lançar um erro quando a atualização falha", async () => {
+    const errorMessage = "Error updating appointment with ID 1";
+    prismaMock.appointment.update.mockRejectedValue(new Error(errorMessage));
+  
+    await expect(appointmentRepository.updateAppointment(appointment.id, { title: "Update fail" }))
+      .rejects
+      .toThrow(errorMessage);
+  });
+
+  //delete
+
+  it("espera deletar um appointment com sucesso", async () => {
+    prismaMock.appointment.delete.mockResolvedValue(appointment as any);
+  
+    const result = await appointmentRepository.deleteAppointment(appointment.id);
+  
+    expect(result).toBe(true);
+    expect(prismaMock.appointment.delete).toHaveBeenCalledWith({
+      where: { id: appointment.id },
+    });
+  });
+  
+  it("espera retornar false quando o appointment não existe para ser deletado", async () => {
+    prismaMock.appointment.delete.mockRejectedValue({ code: 'P2025' });
+  
+    const result = await appointmentRepository.deleteAppointment(999);
+  
+    expect(result).toBe(false);
+  });
+  
+  it("espera lançar um erro quando a exclusão falha", async () => {
+    const errorMessage = "Error deleting appointment with ID 1";
+    prismaMock.appointment.delete.mockRejectedValue(new Error(errorMessage));
+  
+    await expect(appointmentRepository.deleteAppointment(appointment.id))
+      .rejects
+      .toThrow(errorMessage);
+  });
 });
