@@ -133,4 +133,86 @@ describe('AppointmentController', () => {
         });
     });
 
+    describe('updateAppointment', () => {
+        it('deve atualizar um agendamento com sucesso', async () => {
+            const updatedAppointment = {
+                id: 1,
+                startDate: new Date(),
+                endDate: new Date(),
+                idUser: 1,
+                idProperty: 1,
+                title: 'Agendamento Atualizado',
+            };
+    
+            req.params = { id: '1' };
+            req.body = updatedAppointment;
+            mockAppointmentService.update.mockResolvedValue(updatedAppointment);
+    
+            await appointmentController.updateAppointment(req as Request, res as Response);
+    
+            expect(mockAppointmentService.update).toHaveBeenCalledWith(1, updatedAppointment);
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith(updatedAppointment);
+        });
+    
+        it('deve retornar 404 se o agendamento a ser atualizado não for encontrado', async () => {
+            req.params = { id: '1' };
+            req.body = {};
+            mockAppointmentService.update.mockResolvedValue(null);
+    
+            await appointmentController.updateAppointment(req as Request, res as Response);
+    
+            expect(mockAppointmentService.update).toHaveBeenCalledWith(1, {});
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.json).toHaveBeenCalledWith({ error: 'Appointment not found' });
+        });
+    
+        it('deve retornar erro ao falhar na atualização do agendamento', async () => {
+            req.params = { id: '1' };
+            req.body = {};
+            mockAppointmentService.update.mockRejectedValue(new Error('Error updating appointment'));
+    
+            await appointmentController.updateAppointment(req as Request, res as Response);
+    
+            expect(mockAppointmentService.update).toHaveBeenCalledWith(1, {});
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ error: 'Error updating appointment' });
+        });
+    });
+    
+    describe('deleteAppointment', () => {
+        it('deve deletar um agendamento com sucesso', async () => {
+            req.params = { id: '1' };
+            mockAppointmentService.delete.mockResolvedValue(true);
+    
+            await appointmentController.deleteAppointment(req as Request, res as Response);
+    
+            expect(mockAppointmentService.delete).toHaveBeenCalledWith(1);
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Appointment deleted successfully' });
+        });
+    
+        it('deve retornar 404 se o agendamento a ser deletado não for encontrado', async () => {
+            req.params = { id: '1' };
+            mockAppointmentService.delete.mockResolvedValue(false);
+    
+            await appointmentController.deleteAppointment(req as Request, res as Response);
+    
+            expect(mockAppointmentService.delete).toHaveBeenCalledWith(1);
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.json).toHaveBeenCalledWith({ error: 'Appointment not found' });
+        });
+    
+        it('deve retornar erro ao falhar ao deletar o agendamento', async () => {
+            req.params = { id: '1' };
+            mockAppointmentService.delete.mockRejectedValue(new Error('Error deleting appointment'));
+    
+            await appointmentController.deleteAppointment(req as Request, res as Response);
+    
+            expect(mockAppointmentService.delete).toHaveBeenCalledWith(1);
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ error: 'Error deleting appointment' });
+        });
+    });
+    
 });
