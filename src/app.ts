@@ -5,13 +5,15 @@ import { PropertyService } from "./service/PropertyService";
 import { PropertyController } from "./controller/PropertyController";
 import { IUserRepository } from "./interface/IUserRepository";
 import { UserRepository } from "./repositories/UserRepository";
+import { IPropertyRepository } from './interface/IPropertyRepository';
+import { PropertyRepository } from "./repositories/PropertyRepository";
 
 // Create instances of repositories and services
 const userRepository: IUserRepository = new UserRepository();
 const userService = new UserService(userRepository);
 const userController = new UserController(userService);
-
-const propertyService = new PropertyService();
+const propertyRepository : IPropertyRepository = new PropertyRepository()
+const propertyService = new PropertyService(propertyRepository);
 const propertyController = new PropertyController(propertyService);
 
 // Create the Express app
@@ -28,7 +30,7 @@ app.delete("/users/:id", (req, res) => userController.deleteUser(req, res));
 // Property routes
 app.get("/properties", (req, res) => propertyController.getProperties(req, res));
 app.get("/properties/:id", (req, res) => propertyController.getProperty(req, res));
-app.post("/properties", (req, res) => propertyController.addProperty(req, res));
+//app.post("/properties", (req, res) => propertyController.addProperty(req, res));
 app.put("/properties/:id", (req, res) => propertyController.updateProperty(req, res));
 app.delete("/properties/:id", (req, res) => propertyController.deleteProperty(req, res));
 
