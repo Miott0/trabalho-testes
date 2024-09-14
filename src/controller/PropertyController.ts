@@ -39,7 +39,6 @@ export class PropertyController {
   async createProperty(req: Request, res: Response): Promise<void> {
     try {
       const { area, address } = req.body;
-
       if(!area || !address) {
         res.status(400).json({ message: "Area and address are required" });
         return;

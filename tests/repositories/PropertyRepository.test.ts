@@ -9,7 +9,7 @@ describe('PropertyRepository', () => {
     propertyRepository = new PropertyRepository();
   });
 
-  it('should create a property successfully', async () => {
+  it('deve criar uma propriedade com sucesso', async () => {
     const propertyData: IProperty = { id: 1, area: 100, address: '123 Main St' };
     prismaMock.property.create.mockResolvedValue(propertyData as any);
 
@@ -24,7 +24,7 @@ describe('PropertyRepository', () => {
     });
   });
 
-  it('should throw an error when creating a property fails', async () => {
+  it('deve dar erro quando falhar ao criar uma propriedade', async () => {
     const errorMessage = 'Error creating property';
     prismaMock.property.create.mockRejectedValue(new Error(errorMessage));
 
@@ -33,7 +33,7 @@ describe('PropertyRepository', () => {
       .toThrow(`Error creating property: ${errorMessage}`);
   });
 
-  it('should retrieve a property by ID', async () => {
+  it('deve retornar uma propriedade através do ID', async () => {
     const propertyData: IProperty = { id: 1, area: 100, address: '123 Main St' };
     prismaMock.property.findUnique.mockResolvedValue(propertyData as any);
 
@@ -45,7 +45,7 @@ describe('PropertyRepository', () => {
     });
   });
 
-  it('should return null when property ID does not exist', async () => {
+  it('deve retornar nulo quando quando o ID da propriedade não existir', async () => {
     prismaMock.property.findUnique.mockResolvedValue(null);
 
     const foundProperty = await propertyRepository.getPropertyById(999);
@@ -56,7 +56,7 @@ describe('PropertyRepository', () => {
     });
   });
 
-  it('should throw an error when retrieving a property by ID fails', async () => {
+  it('deve dar erro quando falhar ao tentar retornar uma propriedade através do ID', async () => {
     const errorMessage = 'Error getting property';
     prismaMock.property.findUnique.mockRejectedValue(new Error(errorMessage));
 
@@ -65,7 +65,7 @@ describe('PropertyRepository', () => {
       .toThrow(`Error getting property with ID 1:${errorMessage}`);
   })
 
-  it('should retrieve all properties', async () => {
+  it('deve retornar todas as propriedades', async () => {
     const propertiesData: IProperty[] = [
       { id: 1, area: 100, address: '123 Main St' },
       { id: 2, area: 200, address: '456 Broadway' },
@@ -78,7 +78,7 @@ describe('PropertyRepository', () => {
     expect(prismaMock.property.findMany).toHaveBeenCalled();
   });
 
-  it('should throw an error when retrieving all properties fails', async () => {
+  it('deve dar erro quando todas as propriedades falharem ao retornar', async () => {
     const errorMessage = 'Error getting properties';
     prismaMock.property.findMany.mockRejectedValue(new Error(errorMessage));
 
@@ -87,7 +87,7 @@ describe('PropertyRepository', () => {
       .toThrow(`Error getting properties: ${errorMessage}`);
   });
 
-  it('should update a property successfully', async () => {
+  it('deve atualizar a propriedade com sucesso', async () => {
     const propertyData: IProperty = { id: 1, area: 100, address: '123 Main St' };
     const updatedData: Partial<IProperty> = { area: 150 };
     const updatedProperty: IProperty = { ...propertyData, ...updatedData };
@@ -103,7 +103,7 @@ describe('PropertyRepository', () => {
     });
   });
 
-  it('should throw an error when updating a property fails', async () => {
+  it('deve dar erro ao falhar na tentativa de atualizar uma propriedade', async () => {
     const errorMessage = 'Error updating property';
     prismaMock.property.update.mockRejectedValue(new Error(errorMessage));
 
@@ -112,7 +112,7 @@ describe('PropertyRepository', () => {
       .toThrow(`Error updating property with ID 1:${errorMessage}`)
   })
 
-  it('should delete a property successfully', async () => {
+  it('deve excluir uma propriedade com sucesso', async () => {
     prismaMock.property.delete.mockResolvedValue({} as any);
 
     const result = await propertyRepository.deleteProperty(1);
@@ -123,7 +123,7 @@ describe('PropertyRepository', () => {
     });
   });
 
-  it('should throw an error when deleting a property fails', async () => {
+  it('deve dar erro ao falhar em excluir uma propriedade', async () => {
     const errorMessage = 'Error deleting property';
     prismaMock.property.delete.mockRejectedValue(new Error(errorMessage));
 

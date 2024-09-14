@@ -11,7 +11,7 @@ export class UserService implements IUserService {
 
   async createUser(user: IUser): Promise<IUser> {
     const userExists = await this.userRepository.getUserByEmail(user.email);
-    if (userExists) {
+    if(userExists) {
       throw new Error(`User with ID ${user.id} already exists`);
     }
     return await this.userRepository.addUser(user);
@@ -26,10 +26,18 @@ export class UserService implements IUserService {
   }
 
   async updateUser(id: number, userData: Partial<IUser>): Promise<IUser | null> {
+    const userExists = await this.userRepository.getUserById(id);
+    if(!userExists){
+      throw new Error(`User with ID ${id} does not exist`);
+    }
     return await this.userRepository.updateUser(id, userData);
   }
 
   async deleteUser(id: number): Promise<boolean> {
+    const userExists = await this.userRepository.getUserById(id);
+    if(!userExists){
+      throw new Error(`User with ID ${id} does not exist`);
+    }
     return await this.userRepository.deleteUser(id);
   }
 }

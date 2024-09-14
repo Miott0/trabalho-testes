@@ -26,7 +26,6 @@ describe("PropertyService", () => {
         address: "123 Main St",
       };
 
-      // Mock the addProperty method to return the property
       mockPropertyRepository.addProperty.mockResolvedValue(property);
 
       const result = await propertyService.createProperty(property);
@@ -39,19 +38,10 @@ describe("PropertyService", () => {
   describe("getProperties", () => {
     test("should return properties", async () => {
       const properties: IProperty[] = [
-        {
-          id: 1,
-          area: 100,
-          address: "123 Main St",
-        },
-        {
-          id: 2,
-          area: 200,
-          address: "456 Elm St",
-        },
+        { id: 1, area: 100, address: "123 Main St" },
+        { id: 2, area: 200, address: "456 Elm St" },
       ];
 
-      // Mock the getProperties method to return the properties
       mockPropertyRepository.getProperties.mockResolvedValue(properties);
 
       const result = await propertyService.getProperties();
@@ -61,7 +51,6 @@ describe("PropertyService", () => {
     });
 
     test("should return empty array if no properties", async () => {
-      // Mock the getProperties method to return an empty array
       mockPropertyRepository.getProperties.mockResolvedValue([]);
 
       const result = await propertyService.getProperties();
@@ -69,17 +58,12 @@ describe("PropertyService", () => {
       expect(result).toEqual([]);
       expect(mockPropertyRepository.getProperties).toHaveBeenCalled();
     });
-  })
+  });
 
   describe("getProperty", () => {
-    test("should return property", async () => {
-      const property: IProperty = {
-        id: 1,
-        area: 100,
-        address: "123 Main St",
-      };
+    test("should return property by ID", async () => {
+      const property: IProperty = { id: 1, area: 100, address: "123 Main St" };
 
-      // Mock the getPropertyById method to return the property
       mockPropertyRepository.getPropertyById.mockResolvedValue(property);
 
       const result = await propertyService.getProperty(1);
@@ -89,7 +73,6 @@ describe("PropertyService", () => {
     });
 
     test("should return null if property not found", async () => {
-      // Mock the getPropertyById method to return null
       mockPropertyRepository.getPropertyById.mockResolvedValue(null);
 
       const result = await propertyService.getProperty(1);
@@ -97,17 +80,13 @@ describe("PropertyService", () => {
       expect(result).toBeNull();
       expect(mockPropertyRepository.getPropertyById).toHaveBeenCalledWith(1);
     });
-  })
+  });
 
   describe("updateProperty", () => {
-    test("should update property", async () => {
-      const property: IProperty = {
-        id: 1,
-        area: 100,
-        address: "123 Main St",
-      };
+    test("should update existing property", async () => {
+      const property: IProperty = { id: 1, area: 100, address: "123 Main St" };
 
-      // Mock the updateProperty method to return the updated property
+      mockPropertyRepository.getPropertyById.mockResolvedValue(property);
       mockPropertyRepository.updateProperty.mockResolvedValue(property);
 
       const result = await propertyService.updateProperty(1, property);
@@ -116,26 +95,22 @@ describe("PropertyService", () => {
       expect(mockPropertyRepository.updateProperty).toHaveBeenCalledWith(1, property);
     });
 
-    test("should return null if property not found", async () => {
-      // Mock the updateProperty method to return null
-      mockPropertyRepository.updateProperty.mockResolvedValue(null);
+    test("should throw error if property does not exist", async () => {
+      mockPropertyRepository.getPropertyById.mockResolvedValue(null);
 
-      const result = await propertyService.updateProperty(1, {
-        area: 100,
-        address: "123 Main St",
-      });
+      await expect(propertyService.updateProperty(1, { area: 200 }))
+        .rejects
+        .toThrow("Property with ID 1 does not exist");
 
-      expect(result).toBeNull();
-      expect(mockPropertyRepository.updateProperty).toHaveBeenCalledWith(1, {
-        area: 100,
-        address: "123 Main St",
-      });
+      expect(mockPropertyRepository.updateProperty).not.toHaveBeenCalled();
     });
-  })
+  });
 
   describe("deleteProperty", () => {
     test("should delete property", async () => {
-      // Mock the deleteProperty method to return true
+      const property: IProperty = { id: 1, area: 100, address: "123 Main St" };
+
+      mockPropertyRepository.getPropertyById.mockResolvedValue(property);
       mockPropertyRepository.deleteProperty.mockResolvedValue(true);
 
       const result = await propertyService.deleteProperty(1);
@@ -144,15 +119,14 @@ describe("PropertyService", () => {
       expect(mockPropertyRepository.deleteProperty).toHaveBeenCalledWith(1);
     });
 
-    test("should return false if property not found", async () => {
-      // Mock the deleteProperty method to return false
-      mockPropertyRepository.deleteProperty.mockResolvedValue(false);
+    test("should throw error if property does not exist", async () => {
+      mockPropertyRepository.getPropertyById.mockResolvedValue(null);
 
-      const result = await propertyService.deleteProperty(1);
+      await expect(propertyService.deleteProperty(1))
+        .rejects
+        .toThrow("Property with ID 1 does not exist");
 
-      expect(result).toBe(false);
-      expect(mockPropertyRepository.deleteProperty).toHaveBeenCalledWith(1);
+      expect(mockPropertyRepository.deleteProperty).not.toHaveBeenCalled();
     });
-  })
-
+  });
 });

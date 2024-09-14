@@ -27,7 +27,7 @@ describe('UserController', () => {
   });
 
   describe('createUser', () => {
-    test('should create a new user and return status 201', async () => {
+    test('deve criar um novo usuário e retornar status 201 (status created)', async () => {
       const user: IUser = { id: 1, name: 'John Doe', email: 'johndoe@example.com' };
       mockUserService.createUser.mockResolvedValue(user);
 
@@ -40,7 +40,7 @@ describe('UserController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith(user);
     });
 
-    test('should return 400 if email is missing', async () => {
+    test('Deve retornar erro 400 se o email estiver faltando', async () => {
       mockRequest.body = { name: 'John Doe' };
   
       await userController.createUser(mockRequest, mockResponse);
@@ -49,7 +49,7 @@ describe('UserController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Email and name are required' });
     });
   
-    test('should return 400 if name is missing', async () => {
+    test('deve retornar 400 se não houver nome', async () => {
       mockRequest.body = { email: 'johndoe@example.com' };
   
       await userController.createUser(mockRequest, mockResponse);
@@ -58,7 +58,7 @@ describe('UserController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Email and name are required' });
     });
   
-    test('should return 400 if email format is invalid', async () => {
+    test('deve retornar 400 se o formato de e-mail for invalido', async () => {
       mockRequest.body = { email: 'invalid-email', name: 'John Doe' };
   
       await userController.createUser(mockRequest, mockResponse);
@@ -67,7 +67,7 @@ describe('UserController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Invalid email format' });
     });
   
-    test('should return 400 if name is empty', async () => {
+    test('deve retornar 400 se o nome for vazio', async () => {
       mockRequest.body = { email: 'johndoe@example.com', name: ' ' };
   
       await userController.createUser(mockRequest, mockResponse);
@@ -76,7 +76,7 @@ describe('UserController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Name cannot be empty' });
     });
 
-    test('should return 500 when createUser fails', async () => {
+    test('deve retornar 500 (internal server error) quando falhar na criação de usuário', async () => {
       mockUserService.createUser.mockRejectedValue(new Error('Creation failed'));
 
       mockRequest.body = { name: 'John Doe', email: 'johndoe@example.com' };
@@ -90,7 +90,7 @@ describe('UserController', () => {
   });
 
   describe('getUserById', () => {
-    test('should return a user by ID', async () => {
+    test('deve retornar um usuário através do ID', async () => {
       const user: IUser = { id: 1, name: 'John Doe', email: 'johndoe@example.com' };
       mockUserService.getUserById.mockResolvedValue(user);
 
@@ -102,7 +102,7 @@ describe('UserController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith(user);
     });
 
-    test('should return 400 when ID is invalid', async () => {
+    test('deve retornar erro 400 (bad request) quando o ID for inválido', async () => {
       mockRequest.params = { id: 'abc' };
 
       await userController.getUserById(mockRequest, mockResponse);
@@ -111,7 +111,7 @@ describe('UserController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Invalid user ID' });
     });
 
-    test('should return 404 when user not found', async () => {
+    test('deve retornar 404 quando não acha o usuário (not found)', async () => {
       mockUserService.getUserById.mockResolvedValue(null);
 
       mockRequest.params = { id: '1' };
@@ -123,7 +123,7 @@ describe('UserController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({ message: 'User not found' });
     });
 
-    test('should return 500 when getUserById fails', async () => {
+    test('deve retornar 500 quando falhar ao usar o método getUserById', async () => {
       mockUserService.getUserById.mockRejectedValue(new Error('Retrieval failed'));
 
       mockRequest.params = { id: '1' };
@@ -137,7 +137,7 @@ describe('UserController', () => {
   });
 
   describe('getAllUsers', () => {
-    test('should retrieve all users', async () => {
+    test('deve retornar todos os usuários', async () => {
       const users: IUser[] = [
         { id: 1, name: 'John Doe', email: 'johndoe@example.com' },
         { id: 2, name: 'Jane Doe', email: 'janedoe@example.com' },
@@ -150,7 +150,7 @@ describe('UserController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith(users);
     });
 
-    test('should return 500 when getAllUsers fails', async () => {
+    test('deve retornar 500 quando falhar ao puxar todos os usuários', async () => {
       mockUserService.getAllUser.mockRejectedValue(new Error('Retrieval failed'));
 
       await userController.getAllUsers(mockRequest, mockResponse);
@@ -162,7 +162,7 @@ describe('UserController', () => {
   });
 
   describe('updateUser', () => {
-    test('should update a user and return updated user', async () => {
+    test('deve atualizar um usuário e retornar o mesmo atualizado', async () => {
       const updatedUser: IUser = { id: 1, name: 'John Smith', email: 'johnsmith@example.com' };
       mockUserService.updateUser.mockResolvedValue(updatedUser);
 
@@ -175,7 +175,7 @@ describe('UserController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith(updatedUser);
     });
 
-    test('should return 400 when ID is invalid', async () => {
+    test('deve retornar 400 quando o ID é inválido', async () => {
       mockRequest.params = { id: 'abc' };
       mockRequest.body = { name: 'John Smith', email: 'johnsmith@example.com' };
 
@@ -185,7 +185,7 @@ describe('UserController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Invalid user ID' });
     });
 
-    test('should return 404 when trying to update a non-existent user', async () => {
+    test('deve retornar 404 quando tentar atualizar um usuário que não existe', async () => {
       mockUserService.updateUser.mockResolvedValue(null);
 
       mockRequest.params = { id: '1' };
@@ -198,7 +198,7 @@ describe('UserController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({ message: 'User not found' });
     });
 
-    test('should return 500 when updateUser fails', async () => {
+    test('deve retornar 500 quando falhar ao atualizar o usuario', async () => {
       mockUserService.updateUser.mockRejectedValue(new Error('Update failed'));
 
       mockRequest.params = { id: '1' };
@@ -213,7 +213,7 @@ describe('UserController', () => {
   });
 
   describe('deleteUser', () => {
-    test('should delete a user and return success message', async () => {
+    test('deve excluir um usuário e retornar uma mensagem informando o sucesso', async () => {
       mockUserService.deleteUser.mockResolvedValue(true);
 
       mockRequest.params = { id: '1' };
@@ -224,7 +224,7 @@ describe('UserController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({ message: 'User deleted successfully' });
     });
 
-    test('should return 400 when ID is invalid', async () => {
+    test('deve retornar 400 quando o ID é inválido', async () => {
       mockRequest.params = { id: 'abc' };
 
       await userController.deleteUser(mockRequest, mockResponse);
@@ -233,7 +233,7 @@ describe('UserController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Invalid user ID' });
     });
 
-    test('should return 404 when trying to delete a non-existent user', async () => {
+    test('deve retornar 404 quando tentar excluir um usuário não existente', async () => {
       mockUserService.deleteUser.mockResolvedValue(false);
 
       mockRequest.params = { id: '1' };
@@ -245,7 +245,7 @@ describe('UserController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({ message: 'User not found' });
     });
 
-    test('should return 500 when deleteUser fails', async () => {
+    test('deve retornar 500 quando falhar na tentativa de excluir o usuário', async () => {
       mockUserService.deleteUser.mockRejectedValue(new Error('Deletion failed'));
 
       mockRequest.params = { id: '1' };
