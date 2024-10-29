@@ -31,5 +31,3 @@ npx prisma generate
     npm run build
 
     npm start
-    #ou
-    npm start:prod

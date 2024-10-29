@@ -17,19 +17,34 @@ export class AppointmentController {
      *           schema:
      *             type: object
      *             properties:
-     *               propertyId:
-     *                 type: integer
-     *                 description: ID da propriedade.
-     *               userId:
-     *                 type: integer
-     *                 description: ID do usuário.
-     *               date:
+     *               title:
      *                 type: string
-     *                 format: date
-     *                 description: Data do agendamento.
+     *                 description: Título do agendamento.
+     *               startDate:
+     *                 type: string
+     *                 format: date-time
+     *                 description: Data e hora de início do agendamento.
+     *               endDate:
+     *                 type: string
+     *                 format: date-time
+     *                 description: Data e hora de término do agendamento.
+     *               idUser:
+     *                 type: integer
+     *                 description: ID do usuário associado ao agendamento.
+     *               idProperty:
+     *                 type: integer
+     *                 description: ID da propriedade associada ao agendamento.
+     *             required:
+     *               - title
+     *               - startDate
+     *               - endDate
+     *               - idUser
+     *               - idProperty
      *     responses:
      *       201:
      *         description: Agendamento criado com sucesso.
+     *       400:
+     *         description: Dados inválidos.
      *       500:
      *         description: Erro ao criar o agendamento.
      */

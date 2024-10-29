@@ -35,7 +35,8 @@ export class AppointmentRepository implements IAppointmentRepository {
       });
       return newAppointment;
     } catch (err: any) {
-      throw new Error(`Error creating appointment`);
+      console.error("Erro ao criar agendamento:", err); // Log detalhado do erro
+        throw new Error(`Error creating appointment: ${err.message}`); // Relança com detalhes
     }
   }
 
