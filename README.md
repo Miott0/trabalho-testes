@@ -32,4 +32,4 @@ npx prisma generate
 
     npm start
     #ou
-    npm star:prod
+    npm start:prod
