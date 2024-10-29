@@ -27,7 +27,7 @@ npx prisma generate
 ````
 <br>
 <h2>Para rodar o serviço de forma local:</h2> 
-```bash
+
     npm run build
 
     npm start
