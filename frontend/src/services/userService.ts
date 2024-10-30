@@ -9,7 +9,7 @@ export const getUsers = async (): Promise<User[]> => {
     return response.data;
   } catch (error) {
     console.error("Error fetching users:", error);
-    throw error; // re-lança o erro para tratamento adicional
+    throw error;
   }
 };
 export const createUser = async (user: User) => (await axios.post<User>(API_URL, user)).data;

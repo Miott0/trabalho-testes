@@ -1,3 +1,5 @@
+//USER FORM COMPONENT
+
 import React, { useState, useEffect } from 'react';
 import { User } from '../types/User';
 
@@ -44,7 +46,7 @@ const UserForm: React.FC<UserFormProps> = ({ initialData, onSubmit }) => {
         placeholder="Email"
         required
       />
-      <button type="submit">{initialData ? 'Salvar Edição' : 'Criar Usuário'}</button>
+      <button type="submit">{initialData ? 'Edit User' : 'Create User'}</button>
     </form>
   );
 };

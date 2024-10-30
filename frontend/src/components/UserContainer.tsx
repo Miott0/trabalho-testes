@@ -1,3 +1,4 @@
+//USERCONTAINER 
 import React, { useState, useEffect } from 'react';
 import UserForm from './UserForm';
 import { User } from '../types/User';
@@ -25,18 +26,16 @@ function UserContainer() {
   const handleCreateOrUpdate = async (user: User) => {
     if (editingUser) {
       await updateUser({ ...editingUser, ...user });
-      setToastProps({ message: 'Usuário atualizado com sucesso!', type: ToastType.UPDATE });
+      
       setEditingUser(null);
     } else {
       await createUser(user);
-      setToastProps({ message: 'Usuário criado com sucesso!', type: ToastType.CREATE });
     }
     fetchUsers();
   };
 
   const handleDelete = async (id: number) => {
     await deleteUser(id);
-    setToastProps({ message: 'Usuário deletado com sucesso!', type: ToastType.DELETE });
     fetchUsers();
   };
 
