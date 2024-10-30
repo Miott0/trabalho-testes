@@ -18,7 +18,10 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ initialData, onSubmit }) =>
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setProperty((prevProperty) => ({ ...prevProperty, [name]: value }));
+    setProperty((prevProperty) => ({
+      ...prevProperty,
+      [name]: name === 'area' ? Number(value) : value, // Converte 'area' para número
+    }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
