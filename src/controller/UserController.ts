@@ -14,6 +14,36 @@ export class UserController {
     this.userService = userService;
   }
 
+  /**
+   * @swagger
+   * /users:
+   *   post:
+   *     summary: Cria um novo usuário
+   *     tags: [Users]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               email:
+   *                 type: string
+   *                 description: Email do usuário
+   *               name:
+   *                 type: string
+   *                 description: Nome do usuário
+   *             required:
+   *               - email
+   *               - name
+   *     responses:
+   *       201:
+   *         description: Usuário criado com sucesso.
+   *       400:
+   *         description: Falta de email ou nome, ou formato de email inválido.
+   *       500:
+   *         description: Erro ao criar usuário.
+   */
   async createUser(req: Request, res: Response): Promise<void> {
     try {
       const { email, name } = req.body;
@@ -37,6 +67,29 @@ export class UserController {
     }
   }
 
+  /**
+   * @swagger
+   * /users/{id}:
+   *   get:
+   *     summary: Busca um usuário pelo ID
+   *     tags: [Users]
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: integer
+   *         description: ID do usuário
+   *     responses:
+   *       200:
+   *         description: Dados do usuário.
+   *       400:
+   *         description: ID de usuário inválido.
+   *       404:
+   *         description: Usuário não encontrado.
+   *       500:
+   *         description: Erro ao buscar usuário.
+   */
   async getUserById(req: Request, res: Response): Promise<void> {
     try {
       const id = Number(req.params.id);
@@ -55,6 +108,18 @@ export class UserController {
     }
   }
 
+  /**
+   * @swagger
+   * /users:
+   *   get:
+   *     summary: Retorna todos os usuários
+   *     tags: [Users]
+   *     responses:
+   *       200:
+   *         description: Lista de usuários.
+   *       500:
+   *         description: Erro ao buscar usuários.
+   */
   async getAllUsers(req: Request, res: Response): Promise<void> {
     try {
       const users = await this.userService.getAllUser();
@@ -64,6 +129,42 @@ export class UserController {
     }
   }
 
+  /**
+   * @swagger
+   * /users/{id}:
+   *   put:
+   *     summary: Atualiza um usuário pelo ID
+   *     tags: [Users]
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: integer
+   *         description: ID do usuário
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               email:
+   *                 type: string
+   *                 description: Email do usuário
+   *               name:
+   *                 type: string
+   *                 description: Nome do usuário
+   *     responses:
+   *       200:
+   *         description: Usuário atualizado com sucesso.
+   *       400:
+   *         description: ID de usuário inválido.
+   *       404:
+   *         description: Usuário não encontrado.
+   *       500:
+   *         description: Erro ao atualizar usuário.
+   */
   async updateUser(req: Request, res: Response): Promise<void> {
     try {
       const id = Number(req.params.id);
@@ -83,6 +184,29 @@ export class UserController {
     }
   }
 
+  /**
+   * @swagger
+   * /users/{id}:
+   *   delete:
+   *     summary: Exclui um usuário pelo ID
+   *     tags: [Users]
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: integer
+   *         description: ID do usuário
+   *     responses:
+   *       200:
+   *         description: Usuário excluído com sucesso.
+   *       400:
+   *         description: ID de usuário inválido.
+   *       404:
+   *         description: Usuário não encontrado.
+   *       500:
+   *         description: Erro ao excluir usuário.
+   */
   async deleteUser(req: Request, res: Response): Promise<void> {
     try {
       const id = Number(req.params.id);

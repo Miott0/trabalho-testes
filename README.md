@@ -25,3 +25,9 @@ npx prisma generate
     npm test:appointment
 
 ````
+<br>
+<h2>Para rodar o serviço de forma local:</h2> 
+
+    npm run build
+
+    npm start
