@@ -8,7 +8,7 @@ interface AppointmentListProps {
   onDelete: (id: number) => void;
 }
 
-const AppointmentList: React.FC<AppointmentListProps> = ({ appointments, onEdit, onDelete }) => {
+const AppointmentList: React.FC<AppointmentListProps> = ({ appointments = [], onEdit, onDelete }) => {
   if (appointments.length === 0) {
     return <p className="text-gray-500 text-center mt-4">Nenhum compromisso disponível.</p>;
   }
