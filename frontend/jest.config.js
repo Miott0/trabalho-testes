@@ -1,5 +1,5 @@
 module.exports = {
-    roots: ['<rootDir>/src'],
+    roots: ['<rootDir>/src/tests'],
     testMatch: ['**/?(*.)+(test|spec).[jt]s?(x)'],
     transform: {
       '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest', // Para transpilar TypeScript e JavaScript com Babel
