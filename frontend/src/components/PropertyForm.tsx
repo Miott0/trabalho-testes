@@ -7,11 +7,19 @@ interface PropertyFormProps {
 }
 
 const PropertyForm: React.FC<PropertyFormProps> = ({ initialData, onSubmit }) => {
-  const [property, setProperty] = useState<Property>({ id: 0, area: 0, address: '' });
+  const [property, setProperty] = useState<Property>({
+    id: 0,
+    area: 1, // Definindo o valor padrão como 1
+    address: '',
+  });
 
   useEffect(() => {
     if (initialData) {
-      setProperty(initialData);
+      setProperty({
+        ...initialData,
+        area: initialData.area >= 1 ? initialData.area : 1, // Garante que 'area' não seja menor que 1
+        address: initialData.address || '', // Garante que 'address' não seja 'undefined'
+      });
     }
   }, [initialData]);
 
@@ -19,14 +27,14 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ initialData, onSubmit }) =>
     const { name, value } = e.target;
     setProperty((prevProperty) => ({
       ...prevProperty,
-      [name]: name === 'area' ? Number(value) : value,
+      [name]: name === 'area' ? Math.max(1, Number(value)) : value, // Garante que a área seja no mínimo 1
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(property);
-    setProperty({ id: 0, area: 0, address: '' });
+    setProperty({ id: 0, area: 1, address: '' });
   };
 
   return (
@@ -46,6 +54,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ initialData, onSubmit }) =>
           onChange={handleChange}
           placeholder="Digite a área em metros quadrados"
           required
+          min={1} // Define o valor mínimo como 1
           className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
         />
       </div>

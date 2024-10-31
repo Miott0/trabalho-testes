@@ -7,7 +7,6 @@ interface AppointmentFormProps {
 }
 
 const AppointmentForm: React.FC<AppointmentFormProps> = ({ initialData, onSubmit }) => {
-  // Initialize appointment state with either initialData or default values
   const [appointment, setAppointment] = useState<Appointment>({
     title: '',
     startDate: new Date(),
@@ -16,7 +15,6 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ initialData, onSubmit
     idProperty: 0,
   } as Appointment);
 
-  // Update state with initialData when it changes (for editing functionality)
   useEffect(() => {
     if (initialData) {
       setAppointment({
@@ -29,7 +27,6 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ initialData, onSubmit
     }
   }, [initialData]);
 
-  // Handler for form field changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setAppointment((prev) => ({
@@ -38,7 +35,6 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ initialData, onSubmit
     }));
   };
 
-  // Reset form fields to default values
   const resetForm = () => {
     setAppointment({
       title: '',
@@ -49,11 +45,15 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ initialData, onSubmit
     } as Appointment);
   };
 
-  // Submit handler
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Aqui você pode adicionar validações específicas
+    if (appointment.startDate >= appointment.endDate) {
+      alert('A data de início deve ser anterior à data de término.');
+      return;
+    }
     onSubmit(appointment);
-    resetForm(); // Reset form after submission
+    resetForm();
   };
 
   return (
@@ -70,6 +70,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ initialData, onSubmit
           name="title"
           id="title"
           value={appointment.title}
+          required
           onChange={handleChange}
           placeholder="Digite o título do compromisso"
           className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
@@ -86,6 +87,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ initialData, onSubmit
           value={appointment.startDate.toISOString().slice(0, 16)}
           onChange={handleChange}
           required
+          min={new Date().toISOString().slice(0, 16)}
           className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
         />
       </div>
@@ -100,6 +102,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ initialData, onSubmit
           value={appointment.endDate.toISOString().slice(0, 16)}
           onChange={handleChange}
           required
+          min={new Date().toISOString().slice(0, 16)}
           className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
         />
       </div>
