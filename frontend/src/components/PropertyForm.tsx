@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { IProperty } from '../types/Property';
+import { Property } from '../types/Property';
 
 interface PropertyFormProps {
-  initialData?: IProperty;
-  onSubmit: (property: IProperty) => void;
+  initialData?: Property;
+  onSubmit: (property: Property) => void;
 }
 
 const PropertyForm: React.FC<PropertyFormProps> = ({ initialData, onSubmit }) => {
-  const [property, setProperty] = useState<IProperty>({ id: 0, area: 0, address: '' });
+  const [property, setProperty] = useState<Property>({ id: 0, area: 0, address: '' });
 
   useEffect(() => {
     if (initialData) {

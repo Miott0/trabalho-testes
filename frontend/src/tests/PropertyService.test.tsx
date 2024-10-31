@@ -1,5 +1,4 @@
 // src/tests/propertyService.test.ts
-
 import axios from 'axios';
 import {
   getProperties,
@@ -8,7 +7,7 @@ import {
   updateProperty,
   deleteProperty,
 } from '../services/propertyService';
-import { IProperty } from '../types/Property';
+import { Property } from '../types/Property';
 
 // Mock do axios
 jest.mock('axios');
@@ -16,7 +15,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('propertyService', () => {
   const API_URL = 'http://localhost:3000/properties';
-  const mockProperty: IProperty = { id: 1, area: 100, address: '123 Main St' };
+  const mockProperty: Property = { id: 1, area: 100, address: '123 Main St' };
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -43,7 +42,7 @@ describe('propertyService', () => {
     it('should fetch a single property successfully', async () => {
       mockedAxios.get.mockResolvedValue({ data: mockProperty });
 
-      const property = await getProperty(mockProperty.id);
+      const property = await getProperty(mockProperty.id!);
       expect(property).toEqual(mockProperty);
       expect(mockedAxios.get).toHaveBeenCalledWith(`${API_URL}/${mockProperty.id}`);
     });
@@ -51,7 +50,7 @@ describe('propertyService', () => {
     it('should throw an error if fetching a property fails', async () => {
       mockedAxios.get.mockRejectedValue(new Error('Network error'));
 
-      await expect(getProperty(mockProperty.id)).rejects.toThrow('Failed to fetch property');
+      await expect(getProperty(mockProperty.id!)).rejects.toThrow('Failed to fetch property');
       expect(mockedAxios.get).toHaveBeenCalledWith(`${API_URL}/${mockProperty.id}`);
     });
   });
@@ -75,10 +74,10 @@ describe('propertyService', () => {
 
   describe('updateProperty', () => {
     it('should update a property successfully', async () => {
-      const updatedProperty: Partial<IProperty> = { ...mockProperty, area: 120 };
+      const updatedProperty: Partial<Property> = { ...mockProperty, area: 120 };
       mockedAxios.put.mockResolvedValue({ data: { id: mockProperty.id, ...updatedProperty } });
 
-      const property = await updateProperty(mockProperty.id, updatedProperty);
+      const property = await updateProperty(mockProperty.id!, updatedProperty);
       expect(property).toEqual({ id: mockProperty.id, ...updatedProperty });
       expect(mockedAxios.put).toHaveBeenCalledWith(`${API_URL}/${mockProperty.id}`, updatedProperty);
     });
@@ -86,7 +85,7 @@ describe('propertyService', () => {
     it('should throw an error if updating property fails', async () => {
       mockedAxios.put.mockRejectedValue(new Error('Network error'));
 
-      await expect(updateProperty(mockProperty.id, mockProperty)).rejects.toThrow('Failed to update property');
+      await expect(updateProperty(mockProperty.id!, mockProperty)).rejects.toThrow('Failed to update property');
       expect(mockedAxios.put).toHaveBeenCalledWith(`${API_URL}/${mockProperty.id}`, mockProperty);
     });
   });
@@ -95,14 +94,14 @@ describe('propertyService', () => {
     it('should delete a property successfully', async () => {
       mockedAxios.delete.mockResolvedValue({});
 
-      await deleteProperty(mockProperty.id);
+      await deleteProperty(mockProperty.id!);
       expect(mockedAxios.delete).toHaveBeenCalledWith(`${API_URL}/${mockProperty.id}`);
     });
 
     it('should throw an error if deleting property fails', async () => {
       mockedAxios.delete.mockRejectedValue(new Error('Network error'));
 
-      await expect(deleteProperty(mockProperty.id)).rejects.toThrow('Failed to delete property');
+      await expect(deleteProperty(mockProperty.id!)).rejects.toThrow('Failed to delete property');
       expect(mockedAxios.delete).toHaveBeenCalledWith(`${API_URL}/${mockProperty.id}`);
     });
   });

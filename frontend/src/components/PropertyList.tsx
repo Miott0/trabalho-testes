@@ -1,9 +1,9 @@
 import React from 'react';
-import { IProperty } from '../types/Property';
+import { Property } from '../types/Property';
 
 interface PropertyListProps {
-  properties: IProperty[];
-  onEdit: (property: IProperty) => void;
+  properties: Property[];
+  onEdit: (property: Property) => void;
   onDelete: (id: number) => void; // Ensure the ID type matches your IProperty definition
 }
 

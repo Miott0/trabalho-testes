@@ -1,7 +1,5 @@
-export interface IProperty {
-  id: number;
+export interface Property {
+  id?: number;
   area: number;
   address: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 }

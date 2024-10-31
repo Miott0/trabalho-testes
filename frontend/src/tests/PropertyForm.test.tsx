@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import PropertyForm from '../components/PropertyForm';
-import { IProperty } from '../types/Property';
+import { Property } from '../types/Property';
 
 describe('PropertyForm', () => {
   const mockOnSubmit = jest.fn();
@@ -11,7 +11,7 @@ describe('PropertyForm', () => {
   });
 
   it('renders correctly with initial data for editing', () => {
-    const initialData: IProperty = { id: 1, area: 100, address: '123 Main St' };
+    const initialData: Property = { id: 1, area: 100, address: '123 Main St' };
     render(<PropertyForm initialData={initialData} onSubmit={mockOnSubmit} />);
 
     expect(screen.getByLabelText(/Área \(m²\)/i)).toHaveValue(initialData.area);

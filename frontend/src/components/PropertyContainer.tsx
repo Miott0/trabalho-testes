@@ -1,13 +1,13 @@
 // src/components/PropertyContainer.tsx
 import React, { useState, useEffect } from 'react';
-import { IProperty } from '../types/Property';
+import { Property } from '../types/Property';
 import { getProperties, createProperty, updateProperty, deleteProperty } from '../services/propertyService';
 import PropertyForm from './PropertyForm';
 import PropertyList from './PropertyList';
 
 const PropertyContainer: React.FC = () => {
-  const [properties, setProperties] = useState<IProperty[]>([]);
-  const [editingProperty, setEditingProperty] = useState<IProperty | null>(null);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [editingProperty, setEditingProperty] = useState<Property | null>(null);
 
   const fetchProperties = async () => {
     const data = await getProperties();
@@ -18,9 +18,9 @@ const PropertyContainer: React.FC = () => {
     fetchProperties();
   }, []);
 
-  const handleCreateOrUpdate = async (property: IProperty) => {
+  const handleCreateOrUpdate = async (property: Property) => {
     if (editingProperty) {
-      await updateProperty(editingProperty.id, property);
+      await updateProperty(editingProperty.id!, property);
       setEditingProperty(null);
     } else {
       await createProperty(property);
@@ -33,7 +33,7 @@ const PropertyContainer: React.FC = () => {
     fetchProperties();
   };
 
-  const handleEdit = (property: IProperty) => {
+  const handleEdit = (property: Property) => {
     setEditingProperty(property);
   };
 

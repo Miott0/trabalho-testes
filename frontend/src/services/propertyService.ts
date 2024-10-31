@@ -1,13 +1,13 @@
 // src/services/propertyService.ts
 import axios from 'axios';
-import { IProperty } from '../types/Property';
+import { Property } from '../types/Property';
 
 const API_URL = 'http://localhost:3000/properties';
 
 const handleResponse = (response: any) => response.data;
 
 
-export const getProperties = async (): Promise<IProperty[]> => {
+export const getProperties = async (): Promise<Property[]> => {
   try {
     const response = await axios.get(API_URL);
     return handleResponse(response);
@@ -16,7 +16,7 @@ export const getProperties = async (): Promise<IProperty[]> => {
   }
 };
 
-export const getProperty = async (id: number): Promise<IProperty | undefined> => {
+export const getProperty = async (id: number): Promise<Property | undefined> => {
   try {
     const response = await axios.get(`${API_URL}/${id}`);
     return handleResponse(response);
@@ -25,7 +25,7 @@ export const getProperty = async (id: number): Promise<IProperty | undefined> =>
   }
 };
 
-export const createProperty = async (property: IProperty): Promise<IProperty> => {
+export const createProperty = async (property: Property): Promise<Property> => {
   try {
     const response = await axios.post(API_URL, property);
     return handleResponse(response);
@@ -34,7 +34,7 @@ export const createProperty = async (property: IProperty): Promise<IProperty> =>
   }
 };
 
-export const updateProperty = async (id: number, propertyData: Partial<IProperty>): Promise<IProperty> => {
+export const updateProperty = async (id: number, propertyData: Partial<Property>): Promise<Property> => {
   try {
     const response = await axios.put(`${API_URL}/${id}`, propertyData);
     return handleResponse(response);

@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import PropertyList from '../components/PropertyList';
-import { IProperty } from '../types/Property';
+import { Property } from '../types/Property';
 
 describe('PropertyList', () => {
-  const mockProperties: IProperty[] = [
+  const mockProperties: Property[] = [
     { id: 1, area: 100, address: '123 Main St' },
     { id: 2, area: 200, address: '456 Elm St' },
   ];
