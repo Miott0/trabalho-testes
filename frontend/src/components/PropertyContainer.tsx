@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { IProperty } from '../types/Property';
 import { getProperties, createProperty, updateProperty, deleteProperty } from '../services/propertyService';
