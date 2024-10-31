@@ -21,8 +21,8 @@ export class AppointmentService implements IAppointmentService {
   }
 
   async create(appointment: IAppointment): Promise<IAppointment> {
-    const user = await this.userService.getUserById(appointment.idUser);
-    const property = await this.propertyService.getProperty(appointment.idProperty);
+    const user = await this.userService.getUserById(Number(appointment.idUser));
+    const property = await this.propertyService.getProperty(Number(appointment.idProperty));
     
     if(!user || !property) {
       throw new Error(`User or Property does not exist`);

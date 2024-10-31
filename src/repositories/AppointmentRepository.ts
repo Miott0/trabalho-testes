@@ -28,8 +28,8 @@ export class AppointmentRepository implements IAppointmentRepository {
         data: {
           startDate: appointment.startDate,
           endDate: appointment.endDate,
-          idUser: appointment.idUser,
-          idProperty: appointment.idProperty,
+          idUser: Number(appointment.idUser),
+          idProperty: Number(appointment.idProperty),
           title: appointment.title || '' // Default value for title if undefined
         }
       });

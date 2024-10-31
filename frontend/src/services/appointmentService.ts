@@ -24,7 +24,14 @@ export const getAppointment = async (id: number): Promise<Appointment | undefine
   }
 };
 
-export const createProperty = async (appointment: Appointment): Promise<Appointment> => {
+export const createAppointment = async (appointment: Appointment): Promise<Appointment> => {
+    const data = {
+        title: appointment.title,
+        startDate: appointment.startDate.toISOString(),
+        endDate: appointment.endDate.toISOString(),
+        idUser: Number(appointment.idUser),
+        idProperty: Number(appointment.idProperty),
+    };
   try {
     const response = await axios.post(API_URL, appointment);
     return handleResponse(response);

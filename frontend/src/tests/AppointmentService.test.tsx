@@ -2,7 +2,7 @@ import axios from 'axios';
 import {
   getAppointments,
   getAppointment,
-  createProperty,
+  createAppointment,
   updateAppointment,
   deleteAppointment,
 } from '../services/appointmentService';
@@ -72,7 +72,7 @@ describe('Appointment Service', () => {
     const { id, ...appointmentData } = newAppointment;
     mockedAxios.post.mockResolvedValue({ data: { id: 3, ...appointmentData } });
 
-    const result = await createProperty(newAppointment);
+    const result = await createAppointment(newAppointment);
     expect(result).toEqual({ id: 3, ...appointmentData });
     expect(mockedAxios.post).toHaveBeenCalledWith('http://localhost:3000/appointments', newAppointment);
   });
@@ -127,7 +127,7 @@ describe('Appointment Service', () => {
     };
     mockedAxios.post.mockRejectedValue(new Error('Network Error'));
 
-    await expect(createProperty(newAppointment)).rejects.toThrow('Failed to create appointment');
+    await expect(createAppointment(newAppointment)).rejects.toThrow('Failed to create appointment');
   });
 
   test('deve lançar um erro ao falhar ao atualizar um agendamento', async () => {
