@@ -165,7 +165,27 @@ export class AppointmentController {
         }
     }
 
-    // Exclusão de um agendamento
+    /**
+     * @swagger
+     * /appointments/{id}:
+     *   delete:
+     *     summary: Exclui um agendamento
+     *     tags: [Appointments]
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         required: true
+     *         schema:
+     *           type: integer
+     *         description: ID do agendamento.
+     *     responses:
+     *       200:
+     *         description: Agendamento excluído com sucesso.
+     *       404:
+     *         description: Agendamento não encontrado.
+     *       500:
+     *         description: Erro ao excluir o agendamento.
+     */
     async deleteAppointment(req: Request, res: Response): Promise<Response> {
         try {
             const appointmentId = Number(req.params.id);
