@@ -31,13 +31,13 @@ const PropertyList: React.FC<PropertyListProps> = ({ properties, onEdit, onDelet
           <div className="flex justify-end">
             <button
               onClick={() => onEdit(property)}
-              className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded-l-full transition-colors"
+              className="bg-[#E8E03A] hover:bg-yellow-400 text-black font-semibold py-2 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105 mr-2"
             >
               Editar
             </button>
             <button
-              onClick={() => onDelete(property.id)}
-              className="bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 rounded-r-full transition-colors"
+              onClick={() => onDelete(property.id!)}
+              className="bg-[#584E69] hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105"
             >
               Excluir
             </button>
