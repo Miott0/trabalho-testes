@@ -35,12 +35,14 @@ const UserList: React.FC<UserListProps> = ({ users, onEdit, onDelete }) => {
                 <td className="py-4 px-6 text-center">
                   <button
                     onClick={() => onEdit(user)}
+                    name='edit'
                     className="bg-[#E8E03A] hover:bg-yellow-400 text-black font-semibold py-2 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105 mr-2"
                   >
                     Editar
                   </button>
                   <button
                     onClick={() => onDelete(user.id!)}
+                    name='delete'
                     className="bg-[#584E69] hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105"
                   >
                     Excluir
