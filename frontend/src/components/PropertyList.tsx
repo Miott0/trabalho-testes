@@ -7,7 +7,7 @@ interface PropertyListProps {
   onDelete: (id: number) => void; // Ensure the ID type matches your IProperty definition
 }
 
-const PropertyList: React.FC<PropertyListProps> = ({ properties, onEdit, onDelete }) => {
+const PropertyList: React.FC<PropertyListProps> = ({ properties = [], onEdit, onDelete }) => {
   if (properties.length === 0) {
     return <p className="text-gray-500 text-center mt-4">Nenhuma propriedade disponível.</p>;
   }
@@ -21,8 +21,8 @@ const PropertyList: React.FC<PropertyListProps> = ({ properties, onEdit, onDelet
         >
           <div className="mb-4">
             <img
-              src="https://th.bing.com/th/id/R.fe5cb89deda3fe2da2767800d618cd48?rik=mEXaElZBlZOcOw&pid=ImgRaw&r=0" // Consider making this dynamic based on the property
-              alt={`Imagem da propriedade localizada em ${property.address}`} // Updated alt text for accessibility
+              src="https://th.bing.com/th/id/R.fe5cb89deda3fe2da2767800d618cd48?rik=mEXaElZBlZOcOw&pid=ImgRaw&r=0"
+              alt={`Imagem da propriedade localizada em ${property.address}`}
               className="w-full h-40 object-cover rounded-md"
             />
           </div>
@@ -36,7 +36,7 @@ const PropertyList: React.FC<PropertyListProps> = ({ properties, onEdit, onDelet
               Editar
             </button>
             <button
-              onClick={() => onDelete(property.id!)} // Assuming property.id is guaranteed to be defined
+              onClick={() => onDelete(property.id!)}
               className="bg-[#584E69] hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105"
             >
               Excluir
