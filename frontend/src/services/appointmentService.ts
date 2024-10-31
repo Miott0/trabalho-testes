@@ -1,48 +1,31 @@
+import axios from 'axios';
 import { Appointment } from '../types/appointment';
 
-const API_URL = 'http://localhost:3000/api/appointments';
+const API_URL = 'http://localhost:3000/appointments';
 
 export const getAppointments = async (): Promise<Appointment[]> => {
-    const response = await fetch(API_URL);
-    if (!response.ok) {
-        throw new Error('Failed to fetch appointments');
-    }
-    return await response.json();
+    const response = await axios.get<Appointment[]>(API_URL);
+    return response.data;
 };
 
 export const createAppointment = async (appointment: Omit<Appointment, 'id'>): Promise<Appointment> => {
-    const response = await fetch(API_URL, {
-        method: 'POST',
+    const response = await axios.post<Appointment>(API_URL, appointment, {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(appointment),
     });
-    if (!response.ok) {
-        throw new Error('Failed to create appointment');
-    }
-    return await response.json();
+    return response.data;
 };
 
 export const updateAppointment = async (id: string, updatedData: Partial<Appointment>): Promise<Appointment> => {
-    const response = await fetch(`${API_URL}/${id}`, {
-        method: 'PUT',
+    const response = await axios.put<Appointment>(`${API_URL}/${id}`, updatedData, {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedData),
     });
-    if (!response.ok) {
-        throw new Error('Failed to update appointment');
-    }
-    return await response.json();
+    return response.data;
 };
 
 export const deleteAppointment = async (id: string): Promise<void> => {
-    const response = await fetch(`${API_URL}/${id}`, {
-        method: 'DELETE',
-    });
-    if (!response.ok) {
-        throw new Error('Failed to delete appointment');
-    }
+    await axios.delete(`${API_URL}/${id}`);
 };
