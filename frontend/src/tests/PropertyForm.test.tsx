@@ -1,43 +1,52 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import PropertyForm from '../components/PropertyForm';
-import '@testing-library/jest-dom';
+import { IProperty } from '../types/Property';
 
-describe('PropertyForm Component', () => {
-  const onSubmit = jest.fn();
+describe('PropertyForm', () => {
+  const mockOnSubmit = jest.fn();
 
-  test('renders form fields correctly', () => {
-    render(<PropertyForm onSubmit={onSubmit} />);
-    expect(screen.getByPlaceholderText('Area')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Address')).toBeInTheDocument();
+  beforeEach(() => {
+    jest.clearAllMocks(); // Limpa chamadas anteriores a cada teste
   });
 
-  test('calls onSubmit with property data when form is submitted', () => {
-    render(<PropertyForm onSubmit={onSubmit} />);
+  it('renders correctly with initial data for editing', () => {
+    const initialData: IProperty = { id: 1, area: 100, address: '123 Main St' };
+    render(<PropertyForm initialData={initialData} onSubmit={mockOnSubmit} />);
 
-    fireEvent.change(screen.getByPlaceholderText('Area'), { target: { value: '150' } });
-    fireEvent.change(screen.getByPlaceholderText('Address'), { target: { value: '789 Pine Rd' } });
-    fireEvent.click(screen.getByRole('button', { name: /create/i }));
-
-    expect(onSubmit).toHaveBeenCalledWith({ id: 0, area: 150, address: '789 Pine Rd' });
+    expect(screen.getByLabelText(/Área \(m²\)/i)).toHaveValue(initialData.area);
+    expect(screen.getByLabelText(/Endereço/i)).toHaveValue(initialData.address);
+    expect(screen.getByText(/Editar Propriedade/i)).toBeInTheDocument();
   });
 
-  test('displays edit button when initialData is provided', () => {
-    render(<PropertyForm onSubmit={onSubmit} initialData={{ id: 1, area: 100, address: '123 Main St' }} />);
+  it('renders correctly for creating a new property', () => {
+    render(<PropertyForm onSubmit={mockOnSubmit} />);
 
-    expect(screen.getByRole('button', { name: /edit/i })).toBeInTheDocument();
-    expect(screen.getByDisplayValue('100')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('123 Main St')).toBeInTheDocument();
+    expect(screen.getByLabelText(/Área \(m²\)/i)).toHaveValue(0);
+    expect(screen.getByLabelText(/Endereço/i)).toHaveValue('');
+    expect(screen.getByText(/Criar Propriedade/i)).toBeInTheDocument();
   });
 
-  test('resets form after submission', () => {
-    render(<PropertyForm onSubmit={onSubmit} />);
+  it('submits the form with the correct data', () => {
+    render(<PropertyForm onSubmit={mockOnSubmit} />);
 
-    fireEvent.change(screen.getByPlaceholderText('Area'), { target: { value: '150' } });
-    fireEvent.change(screen.getByPlaceholderText('Address'), { target: { value: '789 Pine Rd' } });
-    fireEvent.click(screen.getByRole('button', { name: /create/i }));
+    fireEvent.change(screen.getByLabelText(/Área \(m²\)/i), { target: { value: '150' } });
+    fireEvent.change(screen.getByLabelText(/Endereço/i), { target: { value: '456 Elm St' } });
 
-    expect(screen.getByPlaceholderText('Area')).toHaveValue(0);
-    expect(screen.getByPlaceholderText('Address')).toHaveValue('');
+    fireEvent.click(screen.getByRole('button', { name: /Adicionar Propriedade/i }));
+
+    expect(mockOnSubmit).toHaveBeenCalledWith({ id: 0, area: 150, address: '456 Elm St' });
+  });
+
+  it('clears the form after submission', () => {
+    render(<PropertyForm onSubmit={mockOnSubmit} />);
+
+    fireEvent.change(screen.getByLabelText(/Área \(m²\)/i), { target: { value: '150' } });
+    fireEvent.change(screen.getByLabelText(/Endereço/i), { target: { value: '456 Elm St' } });
+
+    fireEvent.click(screen.getByRole('button', { name: /Adicionar Propriedade/i }));
+
+    expect(screen.getByLabelText(/Área \(m²\)/i)).toHaveValue(0);
+    expect(screen.getByLabelText(/Endereço/i)).toHaveValue('');
   });
 });

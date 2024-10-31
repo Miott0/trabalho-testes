@@ -68,7 +68,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ initialData, onSubmit }) =>
         type="submit"
         className="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded-lg transition-colors"
       >
-        {initialData ? 'Atualizar Propriedade' : 'Adicionar Propriedade'}
+        {initialData ? 'Salvar' : 'Adicionar Propriedade'}
       </button>
     </form>
   );

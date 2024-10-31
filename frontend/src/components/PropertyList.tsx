@@ -4,7 +4,7 @@ import { IProperty } from '../types/Property';
 interface PropertyListProps {
   properties: IProperty[];
   onEdit: (property: IProperty) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: number) => void; // Ensure the ID type matches your IProperty definition
 }
 
 const PropertyList: React.FC<PropertyListProps> = ({ properties, onEdit, onDelete }) => {
@@ -21,8 +21,8 @@ const PropertyList: React.FC<PropertyListProps> = ({ properties, onEdit, onDelet
         >
           <div className="mb-4">
             <img
-              src="https://th.bing.com/th/id/R.fe5cb89deda3fe2da2767800d618cd48?rik=mEXaElZBlZOcOw&pid=ImgRaw&r=0"
-              alt="Propriedade"
+              src="https://th.bing.com/th/id/R.fe5cb89deda3fe2da2767800d618cd48?rik=mEXaElZBlZOcOw&pid=ImgRaw&r=0" // Consider making this dynamic based on the property
+              alt={`Imagem da propriedade localizada em ${property.address}`} // Updated alt text for accessibility
               className="w-full h-40 object-cover rounded-md"
             />
           </div>
@@ -36,7 +36,7 @@ const PropertyList: React.FC<PropertyListProps> = ({ properties, onEdit, onDelet
               Editar
             </button>
             <button
-              onClick={() => onDelete(property.id!)}
+              onClick={() => onDelete(property.id!)} // Assuming property.id is guaranteed to be defined
               className="bg-[#584E69] hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105"
             >
               Excluir
